@@ -1,10 +1,13 @@
 package com.example.cloud_tracker.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -15,6 +18,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.example.cloud_tracker.filter.CsrfCookieFilter;
+import com.example.cloud_tracker.filter.JwtFilter;
 
 /*
  * the explaination of the crsf and how it work is : 
@@ -29,6 +33,12 @@ import com.example.cloud_tracker.filter.CsrfCookieFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
+    private JwtFilter jwtFilter;
+
+    @Autowired 
+    private AuthenticationProvider authenticationProvider;
+    
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         
@@ -41,7 +51,14 @@ public class SecurityConfig {
         .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class))
 
         .authorizeHttpRequests((authz) -> authz
-                        .anyRequest().permitAll());
+                .anyRequest().permitAll())
+        .authorizeHttpRequests(requests -> requests
+                .anyRequest()
+                .authenticated())
+        .sessionManagement(management -> management
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

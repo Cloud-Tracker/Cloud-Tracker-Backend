@@ -37,14 +37,12 @@ public class JwtFilter extends OncePerRequestFilter {
     public void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain)
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
         if(authHeader == null || ! authHeader.startsWith("Bearer ")){
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token does not begin with Bearer String");
             return;
         }
-        jwt = authHeader.substring(7);
-        userEmail = jwtService.extractUserName(jwt);
+        final String jwt = authHeader.substring(7);
+        final String userEmail = jwtService.extractUserName(jwt);
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails =this.userDetailsService.loadUserByUsername(userEmail);
             if(jwtService.validateToken(jwt, userDetails)){
