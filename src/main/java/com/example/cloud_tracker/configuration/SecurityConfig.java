@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
@@ -20,12 +22,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import com.example.cloud_tracker.service.UserDetailsServiceImpl;
 import com.example.cloud_tracker.filter.JwtFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 /*
- * the explaination of the crsf and how it work is : 
+ * the explaination of the crsf and how it work is :
  * we have a public endpoint /hello that we want to ignore the csrf token for it (we can add more endpoints to ignore the csrf token for it)
  * we have a filter that will add the csrf token to the response header
  * and the csrf token will be added to the cookie and the response header
- * and every request will be checked for the csrf token and if it is not there it will return 403 
+ * and every request will be checked for the csrf token and if it is not there it will return 403
  * we add the csrf token to the request header in the form of X-XSRF-TOKEN = csrf token
  */
 
@@ -40,24 +44,29 @@ public class SecurityConfig {
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        
-        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+
+//        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
 
         http
-        .cors(cors -> cors.configurationSource(new CorsConfig()))
+
+                .cors(cors -> cors.configurationSource(new CorsConfig()))
 //
 //        // i put the csrf config in the csrfconfig class and i will call it here
 //        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class));
 
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/").permitAll()
-                .anyRequest().authenticated()
-
-        ).csrf(AbstractHttpConfigurer::disable);
+                        .requestMatchers("/", "/error", "/webjars/**", "/index.html").permitAll()
+                        .anyRequest().authenticated())
+                .oauth2Login(oath2 ->{
+                    oath2.successHandler((request, response, authentication) -> {
+                        response.sendRedirect("/welcome.html");
+                    });
+                })
+                .csrf(AbstractHttpConfigurer::disable);
 //        .sessionManagement(management -> management
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .authenticationProvider(authenticationProvider())
 //                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         return http.build();
     }
     @Bean
