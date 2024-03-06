@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.crypto.SecretKey;
 
+import init.UserInit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import com.example.cloud_tracker.init.UserInit;
 import com.example.cloud_tracker.service.JwtService;
 
 import io.jsonwebtoken.Claims;
@@ -38,10 +38,12 @@ public class JwtServiceTest {
         jwtService = new JwtService();
     }
     @Test
-    void testExtractUserName() {
+    void ExtractUserNameTest() {
         UserDetails user = UserInit.createUser();
         String token = jwtService.generateToken(user);
-        assertEquals("tst@gmail.com", jwtService.extractUserName(token));
+        String  S = jwtService.extractUserName(token);
+        System.out.println("String :" + S);
+        assertEquals(user.getUsername(), jwtService.extractUserName(token));
     }
 
     @Test
@@ -52,7 +54,7 @@ public class JwtServiceTest {
     }
 
     @Test
-    void testExtractExpiration() {
+    void ExtractExpirationTest() {
         UserDetails user = UserInit.createUser();
         String token = jwtService.generateToken(user);
         Long time = System.currentTimeMillis() + 1000 * 60 * 60 * 24;
@@ -82,9 +84,10 @@ public class JwtServiceTest {
         UserDetails user = UserInit.createUser();
         Map<String , Object>extraClaims = new HashMap<>();
         String token = jwtService.generateToken(user);
+
         String tok = Jwts.builder()
         .setClaims(extraClaims)
-        .setSubject("tst@gmail.com")
+        .setSubject(user.getUsername())
         .setIssuedAt(new Date (System.currentTimeMillis()))
         .setExpiration(new Date (System.currentTimeMillis() + 1000 * 60 * 60 * 24))
         .signWith(jwtService.getSigningKey(),SignatureAlgorithm.HS256)
@@ -100,7 +103,7 @@ public class JwtServiceTest {
         String token = jwtService.generateRefreshToken(user);
         String tok = Jwts.builder()
         .setClaims(extraClaims)
-        .setSubject("tst@gmail.com")
+        .setSubject(user.getUsername())
         .setIssuedAt(new Date (System.currentTimeMillis()))
         .setExpiration(new Date (System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
         .signWith(jwtService.getSigningKey(),SignatureAlgorithm.HS256)

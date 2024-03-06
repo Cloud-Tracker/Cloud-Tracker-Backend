@@ -1,10 +1,12 @@
 package com.example.cloud_tracker.configuration;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 
+@Configuration
 public class CorsConfig implements CorsConfigurationSource {
 
     @Override

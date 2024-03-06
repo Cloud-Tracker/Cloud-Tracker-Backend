@@ -2,6 +2,7 @@ package com.example.cloud_tracker.filter;
 
 import java.io.IOException;
 
+import com.example.cloud_tracker.service.UserDetailsServiceImpl;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,15 +18,20 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 
 
 @Component
-@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private JwtService jwtService;
+    private UserDetailsService userDetailsService;
 
+    public void setJwtService(JwtService jwtService) {
+        this.jwtService = jwtService;
+    }
+
+    public void setUserDetailsService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -34,7 +40,9 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    public void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response,@NonNull FilterChain filterChain)
+    public void doFilterInternal(@NonNull HttpServletRequest request,
+                                 @NonNull HttpServletResponse response,
+                                 @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
         if(authHeader == null || ! authHeader.startsWith("Bearer ")){
