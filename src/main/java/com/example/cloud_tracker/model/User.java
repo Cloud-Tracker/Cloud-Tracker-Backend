@@ -1,6 +1,8 @@
-package com.example.cloud_tracker.data;
+package com.example.cloud_tracker.model;
 
 
+import com.example.cloud_tracker.DTO.UserDTO;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,12 +23,19 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Column(unique = true)
     private String email;
     private String password;
     private String name;
-
+    private String image;
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Nullable
     private List<Role> roles;
+
+    public User(UserDTO userDTO){
+        this.email = userDTO.getEmail();
+        this.name = userDTO.getName();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

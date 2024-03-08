@@ -1,4 +1,4 @@
-package com.example.cloud_tracker.jwt;
+package com.example.cloud_tracker.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,8 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-
-import com.example.cloud_tracker.service.JwtService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

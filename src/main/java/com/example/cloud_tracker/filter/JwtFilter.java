@@ -3,6 +3,7 @@ package com.example.cloud_tracker.filter;
 import java.io.IOException;
 
 import com.example.cloud_tracker.service.UserDetailsServiceImpl;
+import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,18 +21,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 
+@Setter
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     private JwtService jwtService;
     private UserDetailsService userDetailsService;
-
-    public void setJwtService(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
-
-    public void setUserDetailsService(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {

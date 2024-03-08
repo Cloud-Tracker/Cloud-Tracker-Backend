@@ -1,22 +1,16 @@
 package com.example.cloud_tracker.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import org.springframework.security.config.http.SessionCreationPolicy;
 import com.example.cloud_tracker.service.UserDetailsServiceImpl;
@@ -55,18 +49,17 @@ public class SecurityConfig {
 //        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class));
 
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/error", "/webjars/**", "/index.html").permitAll()
+                        .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup"
+                                , "/signin").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oath2 ->{
                     oath2.successHandler((request, response, authentication) -> {
                         response.sendRedirect("/welcome.html");
                     });
                 })
-                .csrf(AbstractHttpConfigurer::disable);
-       .sessionManagement(management -> management
-               .authenticationProvider(authenticationProvider())
+                .csrf(AbstractHttpConfigurer::disable)
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-               .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         return http.build();
     }
     @Bean

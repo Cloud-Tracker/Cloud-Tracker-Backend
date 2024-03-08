@@ -1,6 +1,6 @@
 package com.example.cloud_tracker.repository;
 
-import com.example.cloud_tracker.data.User;
+import com.example.cloud_tracker.model.User;
 import init.UserInit;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;

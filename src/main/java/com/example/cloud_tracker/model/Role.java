@@ -1,4 +1,4 @@
-package com.example.cloud_tracker.data;
+package com.example.cloud_tracker.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
