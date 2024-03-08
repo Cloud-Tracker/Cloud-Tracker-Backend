@@ -58,6 +58,7 @@ public class SecurityConfig {
                     });
                 })
                 .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(withDefaults())
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

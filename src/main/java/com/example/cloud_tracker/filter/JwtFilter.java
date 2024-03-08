@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import com.example.cloud_tracker.service.UserDetailsServiceImpl;
 import lombok.Setter;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,13 +26,16 @@ import jakarta.servlet.http.HttpServletResponse;
 @Setter
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+    @Autowired
     private JwtService jwtService;
-    private UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith(""); // paths shouldn't be filtered
+        //"/", "/error", "/webjars/**", "/index.html", "/signup", "/signin"
+        return path.startsWith("/webjars") || path.startsWith("/index.html") || path.startsWith("/signup") || path.startsWith("/signin");
     }
 
     @Override

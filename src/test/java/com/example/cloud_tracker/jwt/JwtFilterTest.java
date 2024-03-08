@@ -20,6 +20,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import com.example.cloud_tracker.filter.JwtFilter;
 import com.example.cloud_tracker.service.JwtService;
+import com.example.cloud_tracker.service.UserDetailsServiceImpl;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -33,14 +34,14 @@ public class JwtFilterTest {
     @Mock
     private JwtService jwtService;
     @Mock
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
     @InjectMocks
     private JwtFilter jwtFilter;
     
     @BeforeEach
     public void setUp() {
         jwtService = mock(JwtService.class);
-        userDetailsService = mock(UserDetailsService.class);
+        userDetailsService = mock(UserDetailsServiceImpl.class);
         jwtFilter = new JwtFilter();
         jwtFilter.setJwtService(jwtService);
         jwtFilter.setUserDetailsService(userDetailsService);
