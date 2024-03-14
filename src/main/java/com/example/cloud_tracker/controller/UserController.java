@@ -1,9 +1,10 @@
 package com.example.cloud_tracker.controller;
 
-import com.example.cloud_tracker.DTO.UserDTO;
+import com.example.cloud_tracker.dto.UserDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("Test");
     }
     @PostMapping("/signup")
-    public ResponseEntity<User> signup(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<User> signup(@RequestBody @Valid UserDTO userDTO) {
         try {
             User user = userService.register(userDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(user);

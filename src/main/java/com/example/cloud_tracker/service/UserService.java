@@ -1,6 +1,6 @@
 package com.example.cloud_tracker.service;
 
-import com.example.cloud_tracker.DTO.UserDTO;
+import com.example.cloud_tracker.dto.UserDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
@@ -10,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -40,7 +38,7 @@ public class UserService implements UserDetailsService {
         if (userRepository.findByEmail(userDTO.getEmail()) != null){
             throw new IllegalArgumentException("User already exists");
         }
-
+        userDTO.setEmail(userDTO.getEmail().toLowerCase());
         User user = new User(userDTO);
         user.setPassword(bCryptPasswordEncoder.encode(userDTO.getPassword()));
         try {
@@ -51,6 +49,7 @@ public class UserService implements UserDetailsService {
     }
 
     public JwtResponse login(@NonNull UserDTO userDTO) {
+        userDTO.setEmail(userDTO.getEmail().toLowerCase());
         User user = userRepository.findByEmail(userDTO.getEmail());
         if (user != null
                 && bCryptPasswordEncoder.matches(userDTO.getPassword(), user.getPassword())){

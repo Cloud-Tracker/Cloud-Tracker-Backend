@@ -1,9 +1,10 @@
 package com.example.cloud_tracker.model;
 
 
-import com.example.cloud_tracker.DTO.UserDTO;
+import com.example.cloud_tracker.dto.UserDTO;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,10 +25,14 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(unique = true)
+    @NotNull
     private String email;
+
+    @NotNull
     private String password;
     private String name;
     private String image;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Nullable
     private List<IAMRole> roles;
