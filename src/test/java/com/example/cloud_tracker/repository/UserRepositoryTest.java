@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Optional;
-
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class UserRepositoryTest {
@@ -23,8 +21,6 @@ public class UserRepositoryTest {
         userRepository.save(user);
 
         User found = userRepository.findByEmail(user.getEmail());
-        Assertions.assertThat(found != null);
-
         Assertions.assertThat(found.getEmail()).isEqualTo(user.getEmail());
     }
 
@@ -34,9 +30,6 @@ public class UserRepositoryTest {
         userRepository.save(user);
 
         User found = userRepository.findById(user.getId());
-
-        Assertions.assertThat(found != null);
-
         Assertions.assertThat(found.getId()).isEqualTo(user.getId());
     }
 

@@ -33,7 +33,7 @@ public class User implements UserDetails {
     private String name;
     private String image;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
     @Nullable
     private List<IAMRole> roles;
 
