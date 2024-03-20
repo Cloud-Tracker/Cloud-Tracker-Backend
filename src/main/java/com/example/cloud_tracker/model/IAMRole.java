@@ -14,7 +14,7 @@ public class IAMRole {
     @Id
     private String accountID;
     private String roleName;
-    private String arnRole;
+    private String arn;
 
     public IAMRole(String accountID, String roleName, int userId) {
         this.accountID = accountID;
@@ -25,9 +25,8 @@ public class IAMRole {
     @Column(name = "user_id")
     private int userId;
 
-    @PostPersist
-    @PostUpdate
-    private void calculateArnRole() {
-        this.arnRole = "arn:aws:iam::" + accountID + ":role/" + roleName;
+    @PrePersist
+    private void setArn() {
+        this.arn = "arn:aws:iam::" + accountID + ":role/" + roleName;
     }
 }
