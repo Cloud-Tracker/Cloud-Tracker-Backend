@@ -15,17 +15,17 @@ public class BlogController {
 
   @Autowired private BlogService blogService;
 
-  @PostMapping("/blog")
+  @PostMapping("/blogs/blog")
   public ResponseEntity<String> saveBlog(@RequestBody @NotNull BlogDTO content) {
     return blogService.saveBlog(content.getHtmlContent());
   }
 
-  @GetMapping("/blog/all")
-  public ArrayList<String> getBlog() {
+  @GetMapping("/blogs")
+  public ArrayList<String> getBlogs() {
     return blogService.getBlogs();
   }
 
-  @GetMapping("/blog/{id}")
+  @GetMapping("/blogs/blog/{id}")
   public ResponseEntity<Blog> getBlogById(@PathVariable int id) {
     Optional<Blog> optionalContent = blogService.getBlogById(id);
     return optionalContent.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());

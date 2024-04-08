@@ -52,7 +52,7 @@ class BlogControllerTest {
 
         when(blogService.getBlogs()).thenReturn(expectedBlogs);
 
-        ArrayList<String> response = blogController.getBlog();
+        ArrayList<String> response = blogController.getBlogs();
 
         assertEquals(expectedBlogs, response);
         verify(blogService, times(1)).getBlogs();

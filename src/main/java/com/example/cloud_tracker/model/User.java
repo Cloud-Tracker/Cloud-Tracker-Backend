@@ -39,6 +39,8 @@ public class User implements UserDetails {
     public User(UserDTO userDTO){
         this.email = userDTO.getEmail();
         this.name = userDTO.getName();
+        this.password = userDTO.getPassword();
+        this.image = userDTO.getImage();
     }
 
     @Override

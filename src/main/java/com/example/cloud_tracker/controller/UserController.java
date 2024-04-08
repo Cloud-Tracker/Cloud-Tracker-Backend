@@ -37,25 +37,25 @@ public class UserController {
     return ResponseEntity.status(HttpStatus.OK).body(jwtResponse);
   }
 
-  @GetMapping("/current-user/profile-picture")
+  @GetMapping("/me/profile-picture")
   public ResponseEntity<String> getCurrentUserProfilePicture() {
     String profilePicture = userService.getCurrentUserProfilePicture();
     return ResponseEntity.ok(profilePicture);
   }
 
-  @GetMapping("/current-user/name")
+  @GetMapping("/me/name")
   public ResponseEntity<String> getCurrentUserName() {
     String userName = userService.getCurrentUserName();
     return ResponseEntity.ok(userName);
   }
 
-  @GetMapping("/current-user/email")
+  @GetMapping("/me/email")
   public ResponseEntity<String> getCurrentUserEmail() {
     String email = userService.getCurrentUserEmail();
     return ResponseEntity.ok(email);
   }
 
-  @PutMapping("/edit-profile")
+  @PutMapping("/me/profile")
   public ResponseEntity<User> editProfile(@RequestBody UserDTO userDTO){
     User user = userService.editProfile(userDTO);
     return ResponseEntity.ok(user);

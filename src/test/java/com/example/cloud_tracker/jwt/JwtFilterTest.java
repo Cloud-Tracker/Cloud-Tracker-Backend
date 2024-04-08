@@ -72,7 +72,7 @@ public class JwtFilterTest {
         request.setRequestURI("/welcome.html");
         assertTrue(jwtFilter.shouldNotFilter(request));
 
-        request.setRequestURI("/blog");
+        request.setRequestURI("/blogs");
         assertTrue(jwtFilter.shouldNotFilter(request));
     }
 

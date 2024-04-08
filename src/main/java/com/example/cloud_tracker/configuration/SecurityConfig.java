@@ -53,7 +53,7 @@ public class SecurityConfig {
 //        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class));
 
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup","/blog","/blog/all","/blog/**"
+                        .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup","/blogs/blog","/blogs","/blogs/blog/**"
                                 , "/signin").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oath2 ->{
