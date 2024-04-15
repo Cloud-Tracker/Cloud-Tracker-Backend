@@ -1,5 +1,6 @@
 package com.example.cloud_tracker.service;
 
+import com.example.cloud_tracker.dto.PasswordUpdateDTO;
 import com.example.cloud_tracker.dto.UserDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
@@ -97,10 +98,23 @@ public class UserService implements UserDetailsService {
     }
     user.setName(updateDTO.getName());
     user.setEmail(updateDTO.getEmail());
-    user.setPassword(bCryptPasswordEncoder.encode(updateDTO.getPassword()));
     user.setImage(updateDTO.getImage());
     userRepository.save(user);
     return user;
    }
+
+   public User editPassword(PasswordUpdateDTO PasswordUpdateDTO){
+    User user = getCurrentUser();
+    if(!bCryptPasswordEncoder.matches(PasswordUpdateDTO.getCurrentPassword(),user.getPassword())){
+      throw new IllegalArgumentException("Invalid current password");
+    }
+    if(!PasswordUpdateDTO.getNewPassword().equals(PasswordUpdateDTO.getConfirmNewPassword())){
+      throw new IllegalArgumentException("Passwords don't match");
+    }
+    user.setPassword(bCryptPasswordEncoder.encode(PasswordUpdateDTO.getNewPassword()));
+    userRepository.save(user);
+    return user;
+   }
+
 
 }

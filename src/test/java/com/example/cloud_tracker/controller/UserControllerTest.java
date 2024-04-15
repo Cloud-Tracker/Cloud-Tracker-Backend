@@ -1,9 +1,13 @@
 package com.example.cloud_tracker.controller;
 
+import com.example.cloud_tracker.dto.PasswordUpdateDTO;
 import com.example.cloud_tracker.dto.UserDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.service.UserService;
+
+import init.UserInit;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -113,13 +117,30 @@ public class UserControllerTest {
 
     @Test
     public void testEditProfileSuccess(){
-        UserDTO userUpdateDTO = new UserDTO("test@gmail.com",
-        "12345",
-        "test",
-        "image.jpg");
-        User user = new User(1, userUpdateDTO.getEmail(), userUpdateDTO.getPassword(), userUpdateDTO.getName(), userUpdateDTO.getImage(), null);
-        when(userService.editProfile(userUpdateDTO)).thenReturn(user);
-        ResponseEntity<User> responseEntity = userController.editProfile(userUpdateDTO);
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail("test@gmail.com");
+        userDTO.setName("test");
+        userDTO.setImage("image.jpg");
+        User user = new User(1, userDTO.getEmail(), null , userDTO.getName(), userDTO.getImage(), null);
+
+        when(userService.editProfile(userDTO)).thenReturn(user);
+
+        ResponseEntity<User> responseEntity = userController.editProfile(userDTO);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(user, responseEntity.getBody());
+    }
+
+    @Test
+    public void testEditPasswordSuccess(){
+        PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO();
+        passwordUpdateDTO.setCurrentPassword("test");
+        passwordUpdateDTO.setNewPassword("test2");
+        passwordUpdateDTO.setConfirmNewPassword("test2");
+        User user = UserInit.createUser();
+
+        when(userService.editPassword(passwordUpdateDTO)).thenReturn(user);
+        
+        ResponseEntity<User> responseEntity = userController.editPassword(passwordUpdateDTO);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(user, responseEntity.getBody());
     }
