@@ -11,22 +11,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "roles")
 public class IAMRole {
-    @Id
-    private String accountID;
-    private String roleName;
-    private String arn;
+  @Id private String accountID;
+  private String roleName;
+  private String arn;
 
-    public IAMRole(String accountID, String roleName, int userId) {
-        this.accountID = accountID;
-        this.roleName = roleName;
-        this.userId = userId;
-    }
+  public IAMRole(String accountID, String roleName, int userId) {
+    this.accountID = accountID;
+    this.roleName = roleName;
+    this.userId = userId;
+  }
 
-    @Column(name = "user_id")
-    private int userId;
+  @Column(name = "user_id")
+  private int userId;
 
-    @PrePersist
-    private void setArn() {
-        this.arn = "arn:aws:iam::" + accountID + ":role/" + roleName;
-    }
+  @PrePersist
+  private void setArn() {
+    this.arn = "arn:aws:iam::" + accountID + ":role/" + roleName;
+  }
 }

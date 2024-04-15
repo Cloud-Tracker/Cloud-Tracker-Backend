@@ -12,25 +12,23 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class UserRepositoryTest {
-    @Autowired
-    private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-    @Test
-    public void testFindUserByEmail() {
-        User user = UserInit.createUser();
-        userRepository.save(user);
+  @Test
+  public void testFindUserByEmail() {
+    User user = UserInit.createUser();
+    userRepository.save(user);
 
-        User found = userRepository.findByEmail(user.getEmail());
-        Assertions.assertThat(found.getEmail()).isEqualTo(user.getEmail());
-    }
+    User found = userRepository.findByEmail(user.getEmail());
+    Assertions.assertThat(found.getEmail()).isEqualTo(user.getEmail());
+  }
 
-    @Test
-    public void testFindUserById() {
-        User user = UserInit.createUser();
-        userRepository.save(user);
+  @Test
+  public void testFindUserById() {
+    User user = UserInit.createUser();
+    userRepository.save(user);
 
-        User found = userRepository.findById(user.getId());
-        Assertions.assertThat(found.getId()).isEqualTo(user.getId());
-    }
-
+    User found = userRepository.findById(user.getId());
+    Assertions.assertThat(found.getId()).isEqualTo(user.getId());
+  }
 }

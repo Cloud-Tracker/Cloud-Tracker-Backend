@@ -1,26 +1,35 @@
 package com.example.cloud_tracker.service;
 
-import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.cloud_tracker.repository.BlackListedTokensRepository;
+import com.example.cloud_tracker.model.BlackListedTokens;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.security.Key;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 @Component
 public class JwtService {
 
 
     private static final String SECRET_KEY="1b7b9849719e40adc0c02f742f498ea5f1b0c468cd37be53429142565b1df374";
+
+    @Autowired
+    private BlackListedTokensRepository blackListedTokensRepository;
 
     public String extractUserName(String token) {
         return extractClaim(token, Claims :: getSubject);
@@ -32,17 +41,31 @@ public class JwtService {
     }
 
     
-    private Boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public Boolean isTokenExpired(String token) {
+        DecodedJWT jwt = JWT.decode(token);
+        return jwt.getExpiresAt().before(new Date());
+    }
+
+    public Boolean isTokenBlackListed(String token){
+        return blackListedTokensRepository.existsByToken(token);
     }
     
-    public Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    public void blackListToken(HttpServletRequest request){
+        final String authHeader = request.getHeader("Authorization");
+        if(authHeader == null || ! authHeader.startsWith("Bearer ")){
+            return;
+        }
+        final String jwt = authHeader.substring(7);
+        BlackListedTokens blackListedTokens= new BlackListedTokens();
+        blackListedTokens.setToken(jwt);
+        blackListedTokensRepository.save(blackListedTokens);
+
     }
     
     public Boolean validateToken(String token, UserDetails userDetails) {
+        if(isTokenExpired(token) || isTokenBlackListed(token)) return false;
         final String username = extractUserName(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        return (username.equals(userDetails.getUsername()));
     }
     
     

@@ -1,12 +1,20 @@
+# JaCoCo Test Coverage
+
+![JaCoCo Coverage](./badges/jacoco.svg)
+![JaCoCo Branches](./badges/branches.svg)
+
 # Docker Guide
 
 To utilize the Docker for Cloud Tracker, follow these steps:
 
-1. **Ensure Docker is Installed:** Verify that Docker is installed on your device. Installation procedures may vary based on your operating system.
+1. **Ensure Docker is Installed:** Verify that Docker is installed on your device. Installation procedures may vary
+   based on your operating system.
 
-2. **Navigate to Project Directory:** Use the terminal to navigate to the project directory. Alternatively, you can utilize the integrated terminal in your IDE.
+2. **Navigate to Project Directory:** Use the terminal to navigate to the project directory. Alternatively, you can
+   utilize the integrated terminal in your IDE.
 
-3. **Build Docker Image:** Execute the following command to build the Docker image. You can replace `cloud-tracker` with your preferred name:
+3. **Build Docker Image:** Execute the following command to build the Docker image. You can replace `cloud-tracker` with
+   your preferred name:
     ```bash
     docker build -t cloud-tracker .
     ```

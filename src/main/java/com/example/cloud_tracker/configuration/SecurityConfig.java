@@ -1,5 +1,9 @@
 package com.example.cloud_tracker.configuration;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
+import com.example.cloud_tracker.filter.JwtFilter;
+import com.example.cloud_tracker.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -7,16 +11,13 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import org.springframework.security.config.http.SessionCreationPolicy;
-import com.example.cloud_tracker.service.UserDetailsServiceImpl;
-import com.example.cloud_tracker.filter.JwtFilter;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 /*
  * the explaination of the crsf and how it work is :
@@ -33,8 +34,11 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
-    public SecurityConfig(JwtFilter jwtFilter) {
+    private final LogoutHandler logoutHandler;
+
+    public SecurityConfig(JwtFilter jwtFilter,LogoutHandler logoutHandler) {
         this.jwtFilter = jwtFilter;
+        this.logoutHandler=logoutHandler;
     }
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -49,7 +53,7 @@ public class SecurityConfig {
 //        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class));
 
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup"
+                        .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup","/blogs/blog","/blogs","/blogs/blog/**"
                                 , "/signin").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oath2 ->{
@@ -59,8 +63,17 @@ public class SecurityConfig {
                 })
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(withDefaults())
-//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+               .logout((logout) ->logout
+                .logoutUrl("/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler((request,response,authentication)->{
+                    SecurityContextHolder.clearContext();
+                    response.getWriter().write("Logout successful");
+                })
+
+               );
         return http.build();
     }
     @Bean
