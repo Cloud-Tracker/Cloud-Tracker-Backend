@@ -1,23 +1,28 @@
-# Use an image that includes Maven so that we can use it to build the JAR File
-FROM maven:3.8.4-openjdk-17 AS build
+# Use Alpine Linux as the base image for the build stage
+FROM openjdk:17-jdk-alpine AS build
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the entire project (including the source code) into the container
-COPY . .
+# Copy the necessary files for the build
+COPY pom.xml mvnw mvnw.cmd ./
+COPY src ./src
+COPY .mvn ./.mvn
+
+# Convert the line endings of mvnw to Unix-style (LF)
+RUN dos2unix mvnw
 
 # Build the JAR file using Maven
-RUN mvn clean package -DskipTests
+RUN ./mvnw clean package -DskipTests
 
-# Use a lightweight OpenJDK image for the runtime stage
+# Use a smaller base image for the runtime stage
 FROM openjdk:17-jdk-alpine
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the built JAR file from the build stage to runtime stage
-COPY --from=build /app/target/cloud_tracker-0.0.1-SNAPSHOT.jar .
+# Copy the built JAR file from the build stage
+COPY --from=build /app/target/cloud_tracker-0.0.1-SNAPSHOT.jar ./
 
 # Set the entry point to run the JAR file
-ENTRYPOINT ["java", "-jar", "/app/cloud_tracker-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "cloud_tracker-0.0.1-SNAPSHOT.jar"]
