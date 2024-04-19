@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "roles")
 public class IAMRole {
-  @Id private String accountID;
+  private String accountID;
   private String roleName;
+  @Id
   private String arn;
 
   public IAMRole(String accountID, String roleName, int userId) {

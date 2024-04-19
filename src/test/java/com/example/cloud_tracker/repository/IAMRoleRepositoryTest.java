@@ -35,4 +35,12 @@ public class IAMRoleRepositoryTest {
         List<IAMRole> found = iamRoleRepository.findByUserId(iamRole.getUserId());
         Assertions.assertThat(found.get(0).getUserId()).isEqualTo(iamRole.getUserId());
     }
+    @Test
+    public void testFindIAMRoleByArn() {
+        IAMRole iamRole = IAMRoleInit.createIAMRole();
+        iamRoleRepository.save(iamRole);
+
+        IAMRole found = iamRoleRepository.findByArn(iamRole.getArn());
+        Assertions.assertThat(found.getArn()).isEqualTo(iamRole.getArn());
+    }
 }

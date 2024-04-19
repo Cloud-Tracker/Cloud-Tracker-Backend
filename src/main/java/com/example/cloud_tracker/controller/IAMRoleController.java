@@ -32,4 +32,15 @@ public class IAMRoleController {
     List<IAMRole> iamRoles = iamRoleService.getIAMRoles(principal.getId());
     return ResponseEntity.status(HttpStatus.OK).body(iamRoles);
   }
+  @GetMapping
+    public ResponseEntity<IAMRole> getRole(@RequestParam String arn) {
+        IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
+        return ResponseEntity.status(HttpStatus.OK).body(iamRole);
+    }
+  @GetMapping("/data")
+    public ResponseEntity<String> getData(@RequestParam String arn) {
+        IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
+        return ResponseEntity.status(HttpStatus.OK).body(iamRoleService.getData(iamRole));
+    }
+
 }
