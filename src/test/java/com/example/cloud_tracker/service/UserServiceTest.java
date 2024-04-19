@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import com.example.cloud_tracker.dto.PasswordUpdateDTO;
 import com.example.cloud_tracker.dto.UserDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
@@ -250,58 +251,109 @@ public class UserServiceTest {
 
     @Test
     public void testUpdateProfileSuccess(){
-        UserDTO userDTO = new UserDTO("test@gmail.com",
-        "12345",
-        "test",
-        "image.jpg");
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail("test@gmail.com");
+        userDTO.setName("test");
+        userDTO.setImage("image.jpg");
         User user = UserInit.createUser();
 
         UserService userServiceSpy = Mockito.spy(userService);
         Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
 
         when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(null);
-        when(bCryptPasswordEncoder.encode(userDTO.getPassword())).thenReturn(userDTO.getPassword());
         
-        User actualUser = new User(1,userDTO.getEmail(),userDTO.getPassword(),userDTO.getName(), userDTO.getImage(),null);
+        User actualUser = new User(1,userDTO.getEmail(),user.getPassword(),userDTO.getName(), userDTO.getImage(),null);
         User user2 = userServiceSpy.editProfile(userDTO);
         assertEquals(actualUser, user2);
     }
 
     @Test
     public void testUpdateProfileFixedEmail(){
-        UserDTO userDTO = new UserDTO("test@test.com",
-        "12345",
-        "test",
-        "image.jpg");
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail("test@test.com");
+        userDTO.setName("test");
+        userDTO.setImage("image.jpg");
         User user = UserInit.createUser();
 
         UserService userServiceSpy = Mockito.spy(userService);
         Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
 
         when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(user);
-        when(bCryptPasswordEncoder.encode(userDTO.getPassword())).thenReturn(userDTO.getPassword());
         
-        User actualUser = new User(1,userDTO.getEmail(),userDTO.getPassword(),userDTO.getName(),userDTO.getImage(),null);
+        User actualUser = new User(1,userDTO.getEmail(),user.getPassword(),userDTO.getName(),userDTO.getImage(),null);
         User user2 = userServiceSpy.editProfile(userDTO);
         assertEquals(actualUser, user2);
     }
 
     @Test
     public void testUpdateProfileFailed(){
-        UserDTO userDTO = new UserDTO("test@gmail.com",
-        "12345",
-        "test",
-        "image.jpg");
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail("test@gmail.com");
+        userDTO.setName("test");
+        userDTO.setImage("image.jpg");
         User user = UserInit.createUser();
 
         UserService userServiceSpy = Mockito.spy(userService);
         Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
         
         when(userRepository.findByEmail(userDTO.getEmail())).thenReturn(user);
-        when(bCryptPasswordEncoder.encode(userDTO.getPassword())).thenReturn(userDTO.getPassword());
         
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userServiceSpy.editProfile(userDTO));
         assertEquals("Email already exists", exception.getMessage());
+    }
+
+    @Test
+    public void testUpdatePasswordSuccess(){
+        PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO();
+        passwordUpdateDTO.setCurrentPassword("test");
+        passwordUpdateDTO.setNewPassword("test2");
+        passwordUpdateDTO.setConfirmNewPassword("test2");
+        User user = UserInit.createUser();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
+        
+        when(bCryptPasswordEncoder.matches(passwordUpdateDTO.getCurrentPassword(), user.getPassword())).thenReturn(true);
+        when(bCryptPasswordEncoder.encode(passwordUpdateDTO.getNewPassword())).thenReturn(passwordUpdateDTO.getNewPassword());
+        
+        User user2 = userServiceSpy.editPassword(passwordUpdateDTO);
+        User actualUser = user;
+        user.setPassword(passwordUpdateDTO.getNewPassword());
+        assertEquals(actualUser, user2);
+    }
+    
+    @Test
+    public void testUpdatePasswordInvalidPassword(){
+        PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO();
+        passwordUpdateDTO.setCurrentPassword("test");
+        passwordUpdateDTO.setNewPassword("test2");
+        passwordUpdateDTO.setConfirmNewPassword("test2");
+        User user = UserInit.createUser();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
+        
+        when(bCryptPasswordEncoder.matches(passwordUpdateDTO.getCurrentPassword(), user.getPassword())).thenReturn(false);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userServiceSpy.editPassword(passwordUpdateDTO));
+        assertEquals("Invalid current password", exception.getMessage());
+    }
+
+    @Test
+    public void testUpdatePasswordNNotMatchPasswords(){
+        PasswordUpdateDTO passwordUpdateDTO = new PasswordUpdateDTO();
+        passwordUpdateDTO.setCurrentPassword("test");
+        passwordUpdateDTO.setNewPassword("test2");
+        passwordUpdateDTO.setConfirmNewPassword("test3");
+        User user = UserInit.createUser();
+
+        UserService userServiceSpy = Mockito.spy(userService);
+        Mockito.doReturn(user).when(userServiceSpy).getCurrentUser();
+        
+        when(bCryptPasswordEncoder.matches(passwordUpdateDTO.getCurrentPassword(), user.getPassword())).thenReturn(true);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> userServiceSpy.editPassword(passwordUpdateDTO));
+        assertEquals("Passwords don't match", exception.getMessage());
     }
 
 

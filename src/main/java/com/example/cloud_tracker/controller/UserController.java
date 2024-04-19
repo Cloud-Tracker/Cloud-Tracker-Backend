@@ -1,5 +1,6 @@
 package com.example.cloud_tracker.controller;
 
+import com.example.cloud_tracker.dto.PasswordUpdateDTO;
 import com.example.cloud_tracker.dto.UserDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
@@ -55,9 +56,15 @@ public class UserController {
     return ResponseEntity.ok(email);
   }
 
-  @PutMapping("/me/profile")
+  @PatchMapping("/me/profile")
   public ResponseEntity<User> editProfile(@RequestBody UserDTO userDTO){
     User user = userService.editProfile(userDTO);
+    return ResponseEntity.ok(user);
+  }
+
+  @PatchMapping("/me/password")
+  public ResponseEntity<User> editPassword(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
+    User user = userService.editPassword(passwordUpdateDTO);
     return ResponseEntity.ok(user);
   }
 }
