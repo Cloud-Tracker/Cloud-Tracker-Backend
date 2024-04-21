@@ -58,7 +58,16 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup","/blogs/blog","/blogs","/blogs/blog/**"
-                                , "/signin").permitAll()
+                        , "/signin","/v2/api-docs",
+                        "/v3/api-docs",
+                        "/v3/api-docs/**",
+                        "/swagger-resources",
+                        "/swagger-resources/**",
+                        "/configuration/ui",
+                        "/configuration/security",
+                        "/swagger-ui/**",
+                        "/webjars/**",
+                        "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oath2 ->{
                     oath2.successHandler((request, response, authentication) -> {
