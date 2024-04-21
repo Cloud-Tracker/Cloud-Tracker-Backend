@@ -95,4 +95,50 @@ class BlogServiceTest {
 
     assertFalse(actualBlogOptional.isPresent());
   }
+
+  @Test
+  public void testUpdateBlog_Success() {
+    int id = 1;
+    String htmlContent = "<p>Updated content</p>";
+    String title = "Updated Title";
+    Blog blog = new Blog(id, htmlContent, title);
+
+    when(blogRepository.findById(id)).thenReturn(Optional.of(blog));
+
+    ResponseEntity<String> responseEntity = blogService.updateBlog(id, htmlContent, title);
+
+    assertEquals("Blog updated successfully", responseEntity.getBody());
+  }
+
+  @Test
+  public void testUpdateBlog_BlogNotFound() {
+    int id = 1;
+    String htmlContent = "<p>Updated content</p>";
+    String title = "Updated Title";
+
+    when(blogRepository.findById(id)).thenReturn(Optional.empty());
+
+    assertThrows(IllegalArgumentException.class, () -> blogService.updateBlog(id, htmlContent, title));
+  }
+
+  @Test
+  public void testDeleteBlog_Success() {
+    int id = 1;
+    Blog blog = new Blog(id, "<p>Content</p>", "Title");
+
+    when(blogRepository.findById(id)).thenReturn(Optional.of(blog));
+
+    ResponseEntity<String> responseEntity = blogService.deleteBlog(id);
+
+    assertEquals("Blog deleted successfully", responseEntity.getBody());
+  }
+
+  @Test
+  public void testDeleteBlog_BlogNotFound() {
+    int id = 1;
+
+    when(blogRepository.findById(id)).thenReturn(Optional.empty());
+
+    assertThrows(IllegalArgumentException.class, () -> blogService.deleteBlog(id));
+  }
 }
