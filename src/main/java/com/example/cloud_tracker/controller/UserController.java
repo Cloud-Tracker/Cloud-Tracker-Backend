@@ -2,7 +2,6 @@ package com.example.cloud_tracker.controller;
 
 import com.example.cloud_tracker.dto.PasswordUpdateDTO;
 import com.example.cloud_tracker.dto.UserDTO;
-import com.example.cloud_tracker.dto.UserProfileDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.service.UserService;
@@ -67,11 +66,5 @@ public class UserController {
   public ResponseEntity<User> editPassword(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
     User user = userService.editPassword(passwordUpdateDTO);
     return ResponseEntity.ok(user);
-  }
-
-  @GetMapping("/me/profile")
-  public ResponseEntity<UserProfileDTO> getUserProfileInfo() {
-    UserProfileDTO userProfileInfo = userService.getUserProfileInfo();
-    return ResponseEntity.status(HttpStatus.OK).body(userProfileInfo);
   }
 }
