@@ -84,4 +84,36 @@ class BlogControllerTest {
 
         assertEquals(expectedResponse, actualResponse);
     }
+
+    @Test
+    public void testUpdateBlog() {
+        int id = 1;
+        String htmlContent = "<p>Updated content</p>";
+        String title = "Updated Title";
+        BlogDTO content = new BlogDTO(htmlContent, title);
+
+        when(blogService.updateBlog(id, htmlContent, title))
+                .thenReturn(new ResponseEntity<>("Blog updated successfully", HttpStatus.OK));
+
+        ResponseEntity<String> responseEntity = blogController.updateBlog(id, content);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("Blog updated successfully", responseEntity.getBody());
+
+        verify(blogService, times(1)).updateBlog(id, htmlContent, title);
+    }
+
+    @Test
+    public void testDeleteBlog() {
+        int id = 1;
+
+        when(blogService.deleteBlog(id)).thenReturn(new ResponseEntity<>("Blog deleted successfully", HttpStatus.OK));
+
+        ResponseEntity<String> responseEntity = blogController.deleteBlog(id);
+
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("Blog deleted successfully", responseEntity.getBody());
+
+        verify(blogService, times(1)).deleteBlog(id);
+    }
 }
