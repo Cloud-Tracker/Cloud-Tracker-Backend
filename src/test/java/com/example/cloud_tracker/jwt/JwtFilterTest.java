@@ -153,7 +153,8 @@ public class JwtFilterTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain filterChain = mock(FilterChain.class);
         UserDetails user = UserInit.createUser();
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user, null,
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user,
+                null,
                 user.getAuthorities());
         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
