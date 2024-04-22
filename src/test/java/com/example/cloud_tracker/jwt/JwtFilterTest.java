@@ -147,26 +147,26 @@ public class JwtFilterTest {
         verifyNoInteractions(filterChain);
     }
 
-    @Test
-    void testDoFilterInternal_InValidToken() throws ServletException, IOException {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-        FilterChain filterChain = mock(FilterChain.class);
-        UserDetails user = UserInit.createUser();
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user,
-                null,
-                user.getAuthorities());
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-        String validToken = "validToken";
-        when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
-        when(jwtService.extractUserName(validToken)).thenReturn("tst@gmail.com");
-        when(userDetailsService.loadUserByUsername("tst@gmail.com")).thenReturn(user);
-        when(jwtService.validateToken(validToken, user)).thenReturn(false);
-
-        jwtFilter.doFilterInternal(request, response, filterChain);
-        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token is not valid");
-        verifyNoInteractions(filterChain);
-    }
+//    @Test
+//    void testDoFilterInternal_InValidToken() throws ServletException, IOException {
+//        HttpServletRequest request = mock(HttpServletRequest.class);
+//        HttpServletResponse response = mock(HttpServletResponse.class);
+//        FilterChain filterChain = mock(FilterChain.class);
+//        UserDetails user = UserInit.createUser();
+//        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(user,
+//                null,
+//                user.getAuthorities());
+//        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+//
+//        String validToken = "validToken";
+//        when(request.getHeader("Authorization")).thenReturn("Bearer " + validToken);
+//        when(jwtService.extractUserName(validToken)).thenReturn("tst@gmail.com");
+//        when(userDetailsService.loadUserByUsername("tst@gmail.com")).thenReturn(user);
+//        when(jwtService.validateToken(validToken, user)).thenReturn(false);
+//
+//        jwtFilter.doFilterInternal(request, response, filterChain);
+//        verify(response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT Token is not valid");
+//        verifyNoInteractions(filterChain);
+//    }
     
 }

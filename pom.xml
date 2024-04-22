@@ -126,11 +126,13 @@
             <artifactId>java-jwt</artifactId>
             <version>4.2.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.1.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk</artifactId>
@@ -182,12 +184,12 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.7</version> <!-- Use the latest version -->
-				<configuration>
-					<excludes>
-						<exclude>com/example/cloud_tracker/dto/**</exclude>
-						<exclude>com/example/cloud_tracker/model/**</exclude>
-					</excludes>
-				</configuration>
+                <configuration>
+                    <excludes>
+                        <exclude>com/example/cloud_tracker/dto/**</exclude>
+                        <exclude>com/example/cloud_tracker/model/**</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
