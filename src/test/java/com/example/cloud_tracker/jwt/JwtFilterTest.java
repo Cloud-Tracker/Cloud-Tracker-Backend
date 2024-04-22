@@ -46,7 +46,6 @@ public class JwtFilterTest {
         jwtFilter.setUserDetailsService(userDetailsService);
     }
 
-
     @Test
     public void testShouldNotFilter() throws ServletException {
         MockHttpServletRequest request = new MockHttpServletRequest();
