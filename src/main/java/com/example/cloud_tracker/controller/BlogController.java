@@ -33,4 +33,15 @@ public class BlogController {
     Optional<Blog> optionalContent = blogService.getBlogById(id);
     return optionalContent.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
   }
+
+  @PutMapping("/blogs/blog/{id}")
+  public ResponseEntity<String> updateBlog(@PathVariable int id, @RequestBody @NotNull BlogDTO content) {
+    return blogService.updateBlog(id, content.getHtmlContent(), content.getTitle());
+  }
+
+  @DeleteMapping("/blogs/blog/{id}")
+  public ResponseEntity<String> deleteBlog(@PathVariable int id) {
+    return blogService.deleteBlog(id);
+  }
+  
 }
