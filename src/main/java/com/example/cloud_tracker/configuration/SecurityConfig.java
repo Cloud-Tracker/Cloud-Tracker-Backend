@@ -58,7 +58,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup","/blogs/blog","/blogs","/blogs/blog/**", "/cost-info/upload",
-                               "cost-info/services" , "cost-info/monthes", "/signin").permitAll()
+                               "cost-info/services" , "cost-info/months", "/signin").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oath2 ->{
                     oath2.successHandler((request, response, authentication) -> {
