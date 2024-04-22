@@ -4,10 +4,14 @@ import com.example.cloud_tracker.model.Blog;
 import com.example.cloud_tracker.repository.BlogRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +19,9 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
+@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@SpringJUnitConfig
 class BlogServiceTest {
 
   @Mock
@@ -94,5 +100,51 @@ class BlogServiceTest {
     Optional<Blog> actualBlogOptional = blogService.getBlogById(blogId);
 
     assertFalse(actualBlogOptional.isPresent());
+  }
+
+  @Test
+  public void testUpdateBlog_Success() {
+    int id = 1;
+    String htmlContent = "<p>Updated content</p>";
+    String title = "Updated Title";
+    Blog blog = new Blog(id, htmlContent, title);
+
+    when(blogRepository.findById(id)).thenReturn(Optional.of(blog));
+
+    ResponseEntity<String> responseEntity = blogService.updateBlog(id, htmlContent, title);
+
+    assertEquals("Blog updated successfully", responseEntity.getBody());
+  }
+
+  @Test
+  public void testUpdateBlog_BlogNotFound() {
+    int id = 1;
+    String htmlContent = "<p>Updated content</p>";
+    String title = "Updated Title";
+
+    when(blogRepository.findById(id)).thenReturn(Optional.empty());
+
+    assertThrows(IllegalArgumentException.class, () -> blogService.updateBlog(id, htmlContent, title));
+  }
+
+  @Test
+  public void testDeleteBlog_Success() {
+    int id = 1;
+    Blog blog = new Blog(id, "<p>Content</p>", "Title");
+
+    when(blogRepository.findById(id)).thenReturn(Optional.of(blog));
+
+    ResponseEntity<String> responseEntity = blogService.deleteBlog(id);
+
+    assertEquals("Blog deleted successfully", responseEntity.getBody());
+  }
+
+  @Test
+  public void testDeleteBlog_BlogNotFound() {
+    int id = 1;
+
+    when(blogRepository.findById(id)).thenReturn(Optional.empty());
+
+    assertThrows(IllegalArgumentException.class, () -> blogService.deleteBlog(id));
   }
 }
