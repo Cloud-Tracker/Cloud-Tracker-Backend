@@ -36,19 +36,14 @@ public class IAMRoleController {
   }
   @GetMapping
   public ResponseEntity<IAMRole> getRole(@RequestParam String arn) {
-      IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
-      return ResponseEntity.status(HttpStatus.OK).body(iamRole);
-  }
-  @GetMapping("/data")
-  public ResponseEntity<CostQueryDTO> getData(@RequestParam String arn) {
-      IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
-      return ResponseEntity.status(HttpStatus.OK).body(iamRoleService.getData(iamRole));
+    IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
+    return ResponseEntity.status(HttpStatus.OK).body(iamRole);
   }
 
   @GetMapping("/cost")
-  public ResponseEntity<List<ServiceCostDTO>> getBlendedCost(CostQueryDTO costQueryDTO){
-      List<ServiceCostDTO> blendedCost = iamRoleService.getBlendedCost(costQueryDTO);
-      return ResponseEntity.status(HttpStatus.OK).body(blendedCost);
+  public ResponseEntity<List<ServiceCostDTO>> getBlendedCost(@RequestParam String arn){
+    IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
+    return ResponseEntity.status(HttpStatus.OK).body(iamRoleService.getBlendedCost(iamRole));
   }
 
 

@@ -59,8 +59,9 @@ public class IAMRoleService {
         return costQueryDTO;
     }
 
-    public List<ServiceCostDTO> getBlendedCost(CostQueryDTO costQueryDTO) {
+    public List<ServiceCostDTO> getBlendedCost(IAMRole iamRole) {
         
+        CostQueryDTO costQueryDTO = getData(iamRole);
         AWSCostExplorer client = AWSCostExplorerClientBuilder.standard()
                 .withCredentials(costQueryDTO.getAwsCredentialsProvider())
                 .withRegion(costQueryDTO.getRegion())
