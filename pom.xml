@@ -194,10 +194,6 @@
                     <excludes>
                         <exclude>com/example/cloud_tracker/dto/**</exclude>
                         <exclude>com/example/cloud_tracker/model/**</exclude>
-                        <exclude>com/example/cloud_tracker/service/IAMRoleService.class</exclude>
-                        <exclude>com/example/cloud_tracker/service/CSVService.class</exclude>
-                        <exclude>com/example/cloud_tracker/service/AWSServicesService.class</exclude>
-                        <exclude>com/example/cloud_tracker/service/MonthlyCostService.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>
