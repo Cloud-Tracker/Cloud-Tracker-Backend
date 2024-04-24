@@ -80,22 +80,23 @@ public class IAMRoleService {
         List<ServiceCostDTO> totalBlendedCost = new ArrayList<>();
  
         for (ResultByTime resultByTime : result.getResultsByTime()) {
+            String date = resultByTime.getTimePeriod().getStart();
             for(Group group : resultByTime.getGroups()){
                 String service = group.getKeys().get(0);
                 if (group.getMetrics() != null) {
                     MetricValue blendedCostMetric = group.getMetrics().get("BlendedCost");
                     if (blendedCostMetric != null) {
                         String currentBlendedCost = blendedCostMetric.getAmount();
-                        ServiceCostDTO serviceCostDTO = new ServiceCostDTO(service,Double.parseDouble(currentBlendedCost));
+                        ServiceCostDTO serviceCostDTO = new ServiceCostDTO(date, service,Double.parseDouble(currentBlendedCost));
                         totalBlendedCost.add(serviceCostDTO);
                     }
                     else{
-                        ServiceCostDTO serviceCostDTO = new ServiceCostDTO(service,0.0);
+                        ServiceCostDTO serviceCostDTO = new ServiceCostDTO(date, service,0.0);
                         totalBlendedCost.add(serviceCostDTO);
                     }
                 }
                 else{
-                    ServiceCostDTO serviceCostDTO = new ServiceCostDTO(service,0.0);
+                    ServiceCostDTO serviceCostDTO = new ServiceCostDTO(date, service,0.0);
                     totalBlendedCost.add(serviceCostDTO);
                 }
             }
