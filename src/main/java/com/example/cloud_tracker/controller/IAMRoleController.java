@@ -1,5 +1,7 @@
 package com.example.cloud_tracker.controller;
 
+import com.example.cloud_tracker.dto.CostQueryDTO;
+import com.example.cloud_tracker.dto.ServiceCostDTO;
 import com.example.cloud_tracker.model.IAMRole;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.service.IAMRoleService;
@@ -33,14 +35,16 @@ public class IAMRoleController {
     return ResponseEntity.status(HttpStatus.OK).body(iamRoles);
   }
   @GetMapping
-    public ResponseEntity<IAMRole> getRole(@RequestParam String arn) {
-        IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
-        return ResponseEntity.status(HttpStatus.OK).body(iamRole);
-    }
-  @GetMapping("/data")
-    public ResponseEntity<String> getData(@RequestParam String arn) {
-        IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
-        return ResponseEntity.status(HttpStatus.OK).body(iamRoleService.getData(iamRole));
-    }
+  public ResponseEntity<IAMRole> getRole(@RequestParam String arn) {
+    IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
+    return ResponseEntity.status(HttpStatus.OK).body(iamRole);
+  }
+
+  @GetMapping("/cost")
+  public ResponseEntity<List<ServiceCostDTO>> getBlendedCost(@RequestParam String arn){
+    IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
+    return ResponseEntity.status(HttpStatus.OK).body(iamRoleService.getBlendedCost(iamRole));
+  }
+
 
 }

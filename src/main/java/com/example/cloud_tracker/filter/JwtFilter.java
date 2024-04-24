@@ -28,9 +28,6 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     public boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith("/webjars") || path.startsWith("/index.html") || path.startsWith("/signup") || path.startsWith("/signin") ||
-                path.equals("/") || path.equals("/welcome.html") || path.startsWith("/blogs") ;
-        // "/", "/error", "/webjars/**", "/index.html", "/signup", "/signin"
         return path.startsWith("/webjars") || path.startsWith("/index.html") || path.startsWith("/signup")
                 || path.startsWith("/signin") ||
                 path.equals("/") || path.equals("/welcome.html") || path.startsWith("/blogs") 
