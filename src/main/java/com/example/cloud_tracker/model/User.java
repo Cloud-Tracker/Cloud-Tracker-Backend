@@ -30,6 +30,7 @@ public class User implements UserDetails {
     @NotNull
     private String password;
     private String name;
+    @Lob
     private String image;
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
