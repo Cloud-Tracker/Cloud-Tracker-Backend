@@ -58,8 +58,8 @@ public class UserController {
   }
 
   @PatchMapping("/me/profile")
-  public ResponseEntity<User> editProfile(@RequestBody UserDTO userDTO){
-    User user = userService.editProfile(userDTO);
+  public ResponseEntity<User> editProfile(@RequestBody UserProfileDTO userProfileDTO){
+    User user = userService.editProfile(userProfileDTO);
     return ResponseEntity.ok(user);
   }
 

@@ -2,6 +2,7 @@ package com.example.cloud_tracker.controller;
 
 import com.example.cloud_tracker.dto.PasswordUpdateDTO;
 import com.example.cloud_tracker.dto.UserDTO;
+import com.example.cloud_tracker.dto.UserProfileDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.service.UserService;
@@ -117,15 +118,12 @@ public class UserControllerTest {
 
     @Test
     public void testEditProfileSuccess(){
-        UserDTO userDTO = new UserDTO();
-        userDTO.setEmail("test@gmail.com");
-        userDTO.setName("test");
-        userDTO.setImage("image.jpg");
-        User user = new User(1, userDTO.getEmail(), null , userDTO.getName(), userDTO.getImage(), null);
+        UserProfileDTO userProfileDTO = new UserProfileDTO("test@gmail.com","test","image.jpg");
+        User user = new User(1, userProfileDTO.getEmail(), null , userProfileDTO.getName(), userProfileDTO.getImage(), null);
 
-        when(userService.editProfile(userDTO)).thenReturn(user);
+        when(userService.editProfile(userProfileDTO)).thenReturn(user);
 
-        ResponseEntity<User> responseEntity = userController.editProfile(userDTO);
+        ResponseEntity<User> responseEntity = userController.editProfile(userProfileDTO);
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(user, responseEntity.getBody());
     }
