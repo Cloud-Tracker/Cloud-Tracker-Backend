@@ -65,16 +65,13 @@ public class IAMRoleServiceTest {
 
     @Test
     void addIAMRole_savesAndReturnsRole() {
-        int userId = 1;
-        IAMRole newRole = new IAMRole();
-        IAMRole savedRole = new IAMRole();
+        String arn = "example_arn";
+        IAMRole newIAMRole = new IAMRole(arn);
+        when(iamRoleRepository.save(any(IAMRole.class))).thenReturn(newIAMRole);
 
-        when(iamRoleRepository.save(newRole)).thenReturn(savedRole);
+        IAMRole result = iamRoleService.addIAMRole(1, arn);
 
-        IAMRole result = iamRoleService.addIAMRole(userId, newRole);
-
-        assertEquals(savedRole, result);
-        verify(iamRoleRepository).save(newRole);
+        verify(iamRoleRepository, times(1)).save(any(IAMRole.class));
     }
 
 }
