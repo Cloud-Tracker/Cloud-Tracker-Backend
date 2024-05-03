@@ -24,10 +24,11 @@ public class IAMRoleController {
 
   @PostMapping()
   public ResponseEntity<IAMRole> addRole(
-      @AuthenticationPrincipal User principal, @RequestBody IAMRole iamRole) {
-    IAMRole newIAMRole = iamRoleService.addIAMRole(principal.getId(), iamRole);
+      @AuthenticationPrincipal User principal, @RequestParam String arn) {
+    IAMRole newIAMRole = iamRoleService.addIAMRole(principal.getId(), arn);
     return ResponseEntity.status(HttpStatus.CREATED).body(newIAMRole);
   }
+
 
   @GetMapping("/all")
   public ResponseEntity<List<IAMRole>> getRoles(@AuthenticationPrincipal User principal) {
@@ -45,6 +46,7 @@ public class IAMRoleController {
     IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
     return ResponseEntity.status(HttpStatus.OK).body(iamRoleService.getBlendedCost(iamRole));
   }
+
 
 
 }

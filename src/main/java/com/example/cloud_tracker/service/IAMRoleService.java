@@ -41,9 +41,9 @@ public class IAMRoleService {
     public IAMRole getIAMRoleByArn(String arn) {
         return iamRoleRepository.findByArn(arn);
     }
-    public IAMRole addIAMRole(int id, IAMRole iamRole) {
-        iamRole.setUserId(id);
-        return iamRoleRepository.save(iamRole);
+    public IAMRole addIAMRole(int id, String arn) {
+        IAMRole newIAMRole = new IAMRole(arn);
+        return iamRoleRepository.save(newIAMRole);
     }
     public CostQueryDTO getData(IAMRole iamRole) {
         LocalDate endDate = LocalDate.now();

@@ -15,6 +15,9 @@ public class IAMRole {
   private String roleName;
   @Id
   private String arn;
+  public IAMRole(String arn) {
+    this.arn = arn;
+  }
 
   public IAMRole(String accountID, String roleName, int userId) {
     this.accountID = accountID;
@@ -26,7 +29,15 @@ public class IAMRole {
   private int userId;
 
   @PrePersist
-  private void setArn() {
-    this.arn = "arn:aws:iam::" + accountID + ":role/" + roleName;
+  private void setRoleCrendentials() {
+    int startIndex = this.arn.indexOf("::") + 2;
+    int endIndex = this.arn.indexOf(":", startIndex);
+
+    this.accountID = this.arn.substring(startIndex, endIndex);
+
+    startIndex = this.arn.lastIndexOf("/") + 1;
+    this.roleName = this.arn.substring(startIndex);
+
   }
+
 }
