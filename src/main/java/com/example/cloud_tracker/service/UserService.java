@@ -91,8 +91,14 @@ public class UserService implements UserDetailsService {
     return currentUser.getEmail();
   }
 
+  public int getCurrentUserID(){
+    User currentUser= getCurrentUser();
+    return currentUser.getId();
+  }
+
   public UserProfileDTO getUserProfileInfo() {
     UserProfileDTO userProfileInfo = new UserProfileDTO(
+            getCurrentUserID(),
             getCurrentUserEmail(),
             getCurrentUserName(),
             getCurrentUserProfilePicture());

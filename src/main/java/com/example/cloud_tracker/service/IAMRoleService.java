@@ -43,6 +43,8 @@ public class IAMRoleService {
     }
     public IAMRole addIAMRole(int id, String arn) {
         IAMRole newIAMRole = new IAMRole(arn);
+        System.out.println(id);
+        newIAMRole.setUserId(id);
         return iamRoleRepository.save(newIAMRole);
     }
     public CostQueryDTO getData(IAMRole iamRole) {
