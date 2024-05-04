@@ -12,6 +12,7 @@ import com.amazonaws.services.costexplorer.model.Group;
 import com.amazonaws.services.costexplorer.model.GroupDefinition;
 import com.amazonaws.services.costexplorer.model.MetricValue;
 import com.amazonaws.services.costexplorer.model.ResultByTime;
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.example.cloud_tracker.dto.CostQueryDTO;
 import com.example.cloud_tracker.dto.ServiceCostDTO;
 import com.example.cloud_tracker.model.IAMRole;
@@ -51,10 +52,9 @@ public class IAMRoleService {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusMonths(6);
         AWSCredentialsProvider credentialsProvider = new STSAssumeRoleSessionCredentialsProvider.Builder(
-                iamRole.getArn(), "SESSION_NAME")
-                .withExternalId("ROFL")
-
-                .build();
+                    iamRole.getArn(), "SESSION_NAME")
+                    .withExternalId("ROFL")
+                    .build();
         // Query
 //        System.out.println("Data from " + startDate + " to " + endDate + " using " + credentialsProvider.getCredentials());
         CostQueryDTO costQueryDTO = new CostQueryDTO( startDate.toString(), endDate.toString(), credentialsProvider, "us-east-1");

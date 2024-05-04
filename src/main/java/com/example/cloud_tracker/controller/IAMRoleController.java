@@ -1,5 +1,6 @@
 package com.example.cloud_tracker.controller;
 
+import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.example.cloud_tracker.dto.CostQueryDTO;
 import com.example.cloud_tracker.dto.ServiceCostDTO;
 import com.example.cloud_tracker.model.IAMRole;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -44,7 +46,13 @@ public class IAMRoleController {
   @GetMapping("/cost")
   public ResponseEntity<List<ServiceCostDTO>> getBlendedCost(@RequestParam String arn){
     IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
-    return ResponseEntity.status(HttpStatus.OK).body(iamRoleService.getBlendedCost(iamRole));
+    try {
+      List<ServiceCostDTO> blendedCost = iamRoleService.getBlendedCost(iamRole);
+      return ResponseEntity.status(HttpStatus.OK).body(blendedCost);
+    } catch (AWSSecurityTokenServiceException ex) {
+      ex.printStackTrace();
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
   }
 
 
