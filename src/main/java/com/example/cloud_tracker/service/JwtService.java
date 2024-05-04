@@ -63,7 +63,7 @@ public class JwtService {
     }
     
     public Boolean validateToken(String token, UserDetails userDetails) {
-        if(isTokenExpired(token) || isTokenBlackListed(token)) return false;
+        if(isTokenExpired(token) || isTokenBlackListed(token) || userDetails == null) return false;
         final String username = extractUserName(token);
         return (username.equals(userDetails.getUsername()));
     }

@@ -1,6 +1,7 @@
 package com.example.cloud_tracker.controller;
 
 import com.example.cloud_tracker.dto.PasswordUpdateDTO;
+import com.example.cloud_tracker.dto.TokenValidationDTO;
 import com.example.cloud_tracker.dto.UserDTO;
 import com.example.cloud_tracker.dto.UserProfileDTO;
 import com.example.cloud_tracker.model.JwtResponse;
@@ -73,5 +74,13 @@ public class UserController {
   public ResponseEntity<User> editPassword(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
     User user = userService.editPassword(passwordUpdateDTO);
     return ResponseEntity.ok(user);
+  }
+  @PostMapping("/validate-token")
+  public ResponseEntity<Boolean> validateToken(@RequestBody TokenValidationDTO tokenValidationDTO) {
+    Boolean isValid = userService.validateUserToken(tokenValidationDTO.getToken());
+    if(isValid)
+      return ResponseEntity.ok(true);
+    else
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
   }
 }

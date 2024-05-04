@@ -70,7 +70,8 @@ public class SecurityConfig {
                         "/configuration/security",
                         "/swagger-ui/**",
                         "/webjars/**",
-                        "/swagger-ui.html").permitAll()
+                        "/swagger-ui.html",
+                        "/validate-token").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oath2 ->{
                     oath2.successHandler((request, response, authentication) -> {

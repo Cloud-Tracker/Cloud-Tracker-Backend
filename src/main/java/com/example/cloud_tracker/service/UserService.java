@@ -7,6 +7,7 @@ import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
 import org.springframework.lang.NonNull;
 import com.example.cloud_tracker.dto.UserProfileDTO;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -71,9 +72,13 @@ public class UserService implements UserDetailsService {
   }
 
   public User getCurrentUser() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-    return userRepository.findByEmail(userDetails.getUsername());
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      if (authentication != null) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return userRepository.findByEmail(userDetails.getUsername());
+      }else{
+        throw new AuthenticationCredentialsNotFoundException("User not signed in");
+      }
   }
 
   public String getCurrentUserProfilePicture() {
@@ -87,8 +92,12 @@ public class UserService implements UserDetailsService {
   }
 
   public String getCurrentUserEmail() {
-    User currentUser = getCurrentUser();
-    return currentUser.getEmail();
+    try{
+      User currentUser = getCurrentUser();
+      return currentUser.getEmail();
+    }catch (Exception ex){
+      return null;
+    }
   }
 
 
@@ -128,4 +137,14 @@ public class UserService implements UserDetailsService {
    }
 
 
+  public Boolean validateUserToken(String token) {
+      try {
+        UserDetails userDetails = getCurrentUser();
+        if(userDetails == null)
+          return false;
+        return jwtService.validateToken(token, userDetails);
+      } catch (Exception ex) {
+        return false;
+      }
+  }
 }
