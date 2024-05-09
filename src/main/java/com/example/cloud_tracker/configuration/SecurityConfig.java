@@ -58,9 +58,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup","/blogs/blog","/blogs","/blogs/blog/**"
-                        , "/signin", "/cost-info/upload",
-                        "cost-info/services",
-                        "cost-info/months",
+                        , "/signin",
                         "/v2/api-docs",
                         "/v3/api-docs",
                         "/v3/api-docs/**",

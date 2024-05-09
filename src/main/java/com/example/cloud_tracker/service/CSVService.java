@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -59,9 +60,12 @@ public class CSVService {
         }
       }
     }
+    SimpleDateFormat yearMonthDayFormat = new SimpleDateFormat("yyyy-MM-dd");
+    String formattedDate = yearMonthDayFormat.format(date);
+
     for (int i = 0; i < costs.size(); i++)
       monthlyCostService.addNewMonthlyCost(
-          date, awsServicesService.getAWSServiceByID(i + 1), costs.get(i));
+              formattedDate, awsServicesService.getAWSServiceByID(i + 1), costs.get(i));
   }
 
   private void extractServiceNames(CSVRecord record, List<String> serviceNames) {

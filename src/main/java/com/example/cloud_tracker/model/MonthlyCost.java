@@ -16,7 +16,7 @@ public class MonthlyCost {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
-  private Date dateOfCost;
-  private String serviceName;
+  private String date;
+  private String service;
   private Double cost;
 }
