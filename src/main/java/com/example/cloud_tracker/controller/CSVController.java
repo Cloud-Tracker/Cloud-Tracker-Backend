@@ -20,7 +20,7 @@ public class CSVController {
   @Autowired private MonthlyCostService monthlyCostService;
 
   @PostMapping("/upload")
-  public ResponseEntity<String> handleFileUpload(@RequestParam("file") MultipartFile file) {
+  public ResponseEntity<String> handleFileUpload(@RequestBody MultipartFile file) {
     if (file.isEmpty()) {
       return ResponseEntity.badRequest().body("Please upload a file");
     }
