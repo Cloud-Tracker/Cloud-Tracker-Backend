@@ -5,13 +5,7 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider;
 import com.amazonaws.services.costexplorer.AWSCostExplorer;
 import com.amazonaws.services.costexplorer.AWSCostExplorerClientBuilder;
-import com.amazonaws.services.costexplorer.model.DateInterval;
-import com.amazonaws.services.costexplorer.model.GetCostAndUsageRequest;
-import com.amazonaws.services.costexplorer.model.GetCostAndUsageResult;
-import com.amazonaws.services.costexplorer.model.Group;
-import com.amazonaws.services.costexplorer.model.GroupDefinition;
-import com.amazonaws.services.costexplorer.model.MetricValue;
-import com.amazonaws.services.costexplorer.model.ResultByTime;
+import com.amazonaws.services.costexplorer.model.*;
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.example.cloud_tracker.dto.CostQueryDTO;
 import com.example.cloud_tracker.dto.ServiceCostDTO;
@@ -19,6 +13,7 @@ import com.example.cloud_tracker.model.IAMRole;
 import com.example.cloud_tracker.repository.IAMRoleRepository;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -105,6 +100,31 @@ public class IAMRoleService {
         }
  
         return totalBlendedCost;
+    }
+
+    public int getForecast(IAMRole iamRole) {
+        CostQueryDTO costQueryDTO = getData(iamRole);
+        AWSCostExplorer costExplorer = AWSCostExplorerClientBuilder.standard()
+                .withCredentials(costQueryDTO.getAwsCredentialsProvider())
+                .withRegion(costQueryDTO.getRegion())
+                .build();
+
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusMonths(6);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        DateInterval dateInterval = new DateInterval()
+                .withStart(startDate.format(formatter))
+                .withEnd(endDate.format(formatter));
+
+        GetCostForecastRequest request = new GetCostForecastRequest()
+                .withTimePeriod(dateInterval)
+                .withMetric(Metric.BLENDED_COST)
+                .withGranularity("MONTHLY");
+
+        GetCostForecastResult result = costExplorer.getCostForecast(request);
+
+        return Integer.parseInt(result.getTotal().getAmount());
     }
 
 }
