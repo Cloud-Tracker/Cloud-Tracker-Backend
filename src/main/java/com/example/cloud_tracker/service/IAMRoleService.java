@@ -5,22 +5,15 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider;
 import com.amazonaws.services.costexplorer.AWSCostExplorer;
 import com.amazonaws.services.costexplorer.AWSCostExplorerClientBuilder;
-import com.amazonaws.services.costexplorer.model.DateInterval;
-import com.amazonaws.services.costexplorer.model.GetCostAndUsageRequest;
-import com.amazonaws.services.costexplorer.model.GetCostAndUsageResult;
-import com.amazonaws.services.costexplorer.model.Group;
-import com.amazonaws.services.costexplorer.model.GroupDefinition;
-import com.amazonaws.services.costexplorer.model.MetricValue;
-import com.amazonaws.services.costexplorer.model.ResultByTime;
-import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
+import com.amazonaws.services.costexplorer.model.*;
 import com.example.cloud_tracker.dto.CostQueryDTO;
+import com.example.cloud_tracker.dto.Ec2DTO;
 import com.example.cloud_tracker.dto.ServiceCostDTO;
 import com.example.cloud_tracker.model.IAMRole;
 import com.example.cloud_tracker.repository.IAMRoleRepository;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -48,17 +41,14 @@ public class IAMRoleService {
         newIAMRole.setUserId(id);
         return iamRoleRepository.save(newIAMRole);
     }
+
     public CostQueryDTO getData(IAMRole iamRole) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusMonths(6);
         AWSCredentialsProvider credentialsProvider = new STSAssumeRoleSessionCredentialsProvider.Builder(
                     iamRole.getArn(), "SESSION_NAME")
-                    .withExternalId("ROFL")
                     .build();
-        // Query
-//        System.out.println("Data from " + startDate + " to " + endDate + " using " + credentialsProvider.getCredentials());
-        CostQueryDTO costQueryDTO = new CostQueryDTO( startDate.toString(), endDate.toString(), credentialsProvider, "us-east-1");
-        return costQueryDTO;
+        return new CostQueryDTO( startDate.toString(), endDate.toString(), credentialsProvider, "us-east-1");
     }
 
     public List<ServiceCostDTO> getBlendedCost(IAMRole iamRole) {
@@ -103,8 +93,51 @@ public class IAMRoleService {
                 }
             }
         }
- 
         return totalBlendedCost;
+    }
+
+
+    public List<Ec2DTO> getEC2Data(IAMRole iamRole){
+        CostQueryDTO costQueryDTO = getData(iamRole);
+
+        AWSCostExplorer client = AWSCostExplorerClientBuilder.standard()
+                .withCredentials(costQueryDTO.getAwsCredentialsProvider())
+                .build();
+
+        List<Ec2DTO> ec2DTOS = new ArrayList<>();
+        Expression filter = new Expression()
+                .withDimensions(new DimensionValues()
+                        .withKey(Dimension.SERVICE)
+                        .withValues("AmazonEC2"));
+        LocalDate endDate = LocalDate.now();
+        LocalDate startDate = endDate.minusMonths(6);
+
+        GetCostAndUsageRequest request = new GetCostAndUsageRequest()
+                .withTimePeriod(new DateInterval().withStart(String.valueOf(startDate)).withEnd(String.valueOf(endDate)))
+                .withGranularity(Granularity.MONTHLY)
+                .withMetrics("UnblendedCost", "UsageQuantity")
+                .withFilter(filter)
+                .withGroupBy(
+                        new GroupDefinition().withType(GroupDefinitionType.DIMENSION).withKey("INSTANCE_TYPE"),
+                        new GroupDefinition().withType(GroupDefinitionType.DIMENSION).withKey("REGION"),
+                        new GroupDefinition().withType(GroupDefinitionType.DIMENSION).withKey("OPERATING_SYSTEM")
+                );
+
+        GetCostAndUsageResult result = client.getCostAndUsage(request);
+
+        for (ResultByTime resultByTime : result.getResultsByTime()) {
+            for (Group group : resultByTime.getGroups()) {
+                String instanceType =  group.getKeys().get(0);
+                String region =  group.getKeys().get(1);
+                String os =  group.getKeys().get(2);
+                String unblendedCost = group.getMetrics().get("UnblendedCost").getAmount();
+
+                Ec2DTO ec2DTO = new Ec2DTO(instanceType, region, os, Integer.parseInt(unblendedCost));
+                ec2DTOS.add(ec2DTO);
+            }
+        }
+        return ec2DTOS;
+
     }
 
 }
