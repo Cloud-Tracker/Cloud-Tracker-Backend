@@ -3,11 +3,16 @@ package com.example.cloud_tracker.service;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.costexplorer.AWSCostExplorer;
 import com.amazonaws.services.costexplorer.AWSCostExplorerClientBuilder;
 import com.amazonaws.services.costexplorer.model.*;
+<<<<<<< HEAD
+=======
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
+>>>>>>> 0f2f918eaee3f7e6c74f92773fd40b34ff6897cd
 import com.example.cloud_tracker.dto.CostQueryDTO;
+import com.example.cloud_tracker.dto.Ec2DTO;
 import com.example.cloud_tracker.dto.ServiceCostDTO;
 import com.example.cloud_tracker.model.IAMRole;
 import com.example.cloud_tracker.repository.IAMRoleRepository;
@@ -15,8 +20,10 @@ import com.example.cloud_tracker.repository.IAMRoleRepository;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,17 +50,14 @@ public class IAMRoleService {
         newIAMRole.setUserId(id);
         return iamRoleRepository.save(newIAMRole);
     }
+
     public CostQueryDTO getData(IAMRole iamRole) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusMonths(6);
         AWSCredentialsProvider credentialsProvider = new STSAssumeRoleSessionCredentialsProvider.Builder(
                     iamRole.getArn(), "SESSION_NAME")
-                    .withExternalId("ROFL")
                     .build();
-        // Query
-//        System.out.println("Data from " + startDate + " to " + endDate + " using " + credentialsProvider.getCredentials());
-        CostQueryDTO costQueryDTO = new CostQueryDTO( startDate.toString(), endDate.toString(), credentialsProvider, "us-east-1");
-        return costQueryDTO;
+        return new CostQueryDTO( startDate.toString(), endDate.toString(), credentialsProvider, "us-east-1");
     }
 
     public List<ServiceCostDTO> getBlendedCost(IAMRole iamRole) {
@@ -98,8 +102,76 @@ public class IAMRoleService {
                 }
             }
         }
- 
         return totalBlendedCost;
+    }
+
+
+    public List<Ec2DTO> getEC2Data(IAMRole iamRole) {
+        CostQueryDTO costQueryDTO = getData(iamRole);
+
+        AWSCostExplorer client = AWSCostExplorerClientBuilder.standard()
+                .withCredentials(costQueryDTO.getAwsCredentialsProvider())
+                .withRegion(Regions.US_EAST_1)
+                .build();
+
+        List<Ec2DTO> ec2DTOS = new ArrayList<>();
+        LocalDate startDate = LocalDate.now().minusMonths(12);
+        LocalDate endDate = LocalDate.now();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String start = startDate.format(formatter);
+        String end = endDate.format(formatter);
+
+        GetCostAndUsageRequest request = new GetCostAndUsageRequest()
+                .withTimePeriod(new DateInterval().withStart(start).withEnd(end))
+                .withGranularity(Granularity.MONTHLY)
+                .withMetrics("UnblendedCost")
+                .withGroupBy(
+                        new GroupDefinition().withType("DIMENSION").withKey("INSTANCE_TYPE"),
+                        new GroupDefinition().withType("DIMENSION").withKey("REGION")
+
+                );
+
+        GetCostAndUsageResult result = client.getCostAndUsage(request);
+
+
+        for (ResultByTime resultByTime : result.getResultsByTime()) {
+            for (Group group : resultByTime.getGroups()) {
+                List<String> keys = group.getKeys();
+                String instanceType = !keys.isEmpty() ? keys.get(0) : "Unknown InstanceType";
+                String region = keys.size() > 1 ? keys.get(1) : "Unknown Region";
+
+
+                if (!Objects.equals(instanceType, "NoInstanceType")) {
+                    GetCostAndUsageRequest additionalRequest = new GetCostAndUsageRequest()
+                            .withTimePeriod(new DateInterval().withStart(start).withEnd(end))
+                            .withGranularity(Granularity.MONTHLY)
+                            .withMetrics("UnblendedCost")
+                            .withFilter(new Expression()
+                                    .withAnd(Arrays.asList(
+                                            new Expression().withDimensions(new DimensionValues().withKey("INSTANCE_TYPE").withValues(instanceType)),
+                                            new Expression().withDimensions(new DimensionValues().withKey("REGION").withValues(region))
+                                    )))
+                            .withGroupBy(
+                                    new GroupDefinition().withType("DIMENSION").withKey("OPERATING_SYSTEM")
+                            );
+
+                    GetCostAndUsageResult additionalResult = client.getCostAndUsage(additionalRequest);
+
+                    for (ResultByTime additionalResultByTime : additionalResult.getResultsByTime()) {
+                        for (Group additionalGroup : additionalResultByTime.getGroups()) {
+                            String usageType = additionalGroup.getKeys().get(0);
+                            double additionalCost = Double.parseDouble(additionalGroup.getMetrics().get("UnblendedCost").getAmount());
+
+                            Ec2DTO ec2DTO = new Ec2DTO(instanceType, region, usageType, additionalCost);
+                            ec2DTOS.add(ec2DTO);
+                        }
+                    }
+                }
+            }
+        }
+        ec2DTOS.add(new Ec2DTO("m1.small", "us-east-1", "Linux/UNIX", 5.3));
+        return ec2DTOS;
     }
 
     public int getForecast(IAMRole iamRole) {
