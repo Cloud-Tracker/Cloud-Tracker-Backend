@@ -57,7 +57,18 @@ public class IAMRoleController {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
   }
-  @GetMapping("/reserved_offerings")
+
+  @GetMapping("/ec2cost")
+  public ResponseEntity<List<Ec2DTO>> getEc2Cost(@RequestParam String arn){
+    IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
+    try {
+      return ResponseEntity.status(HttpStatus.OK).body(iamRoleService.getEC2Data(iamRole));
+    }catch (AWSSecurityTokenServiceException ex){
+      ex.printStackTrace();
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+    }
+  }
+  @GetMapping("/offerings")
   public ResponseEntity<Map<Ec2DTO, List<RIDTO>>> getRIOfferings(@RequestParam String arn){
     IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
     try{

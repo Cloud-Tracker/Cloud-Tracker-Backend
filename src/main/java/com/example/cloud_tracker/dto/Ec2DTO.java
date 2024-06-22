@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Ec2DTO {
     String instanceType;
-    String OS;
     String region;
-    int cost;
+    String OS;
+    double cost;
 }

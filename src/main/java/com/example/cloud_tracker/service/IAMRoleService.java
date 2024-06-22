@@ -3,6 +3,7 @@ package com.example.cloud_tracker.service;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.STSAssumeRoleSessionCredentialsProvider;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.costexplorer.AWSCostExplorer;
 import com.amazonaws.services.costexplorer.AWSCostExplorerClientBuilder;
 import com.amazonaws.services.costexplorer.model.*;
@@ -13,8 +14,12 @@ import com.example.cloud_tracker.model.IAMRole;
 import com.example.cloud_tracker.repository.IAMRoleRepository;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -102,40 +107,66 @@ public class IAMRoleService {
 
         AWSCostExplorer client = AWSCostExplorerClientBuilder.standard()
                 .withCredentials(costQueryDTO.getAwsCredentialsProvider())
+                .withRegion(Regions.US_EAST_1)
                 .build();
 
         List<Ec2DTO> ec2DTOS = new ArrayList<>();
-        Expression filter = new Expression()
-                .withDimensions(new DimensionValues()
-                        .withKey(Dimension.SERVICE)
-                        .withValues("AmazonEC2"));
+        LocalDate startDate = LocalDate.now().minusMonths(12);
         LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusMonths(6);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String start = startDate.format(formatter);
+        String end = endDate.format(formatter);
 
         GetCostAndUsageRequest request = new GetCostAndUsageRequest()
-                .withTimePeriod(new DateInterval().withStart(String.valueOf(startDate)).withEnd(String.valueOf(endDate)))
+                .withTimePeriod(new DateInterval().withStart(start).withEnd(end))
                 .withGranularity(Granularity.MONTHLY)
-                .withMetrics("UnblendedCost", "UsageQuantity")
-                .withFilter(filter)
+                .withMetrics("UnblendedCost")
                 .withGroupBy(
-                        new GroupDefinition().withType(GroupDefinitionType.DIMENSION).withKey("INSTANCE_TYPE"),
-                        new GroupDefinition().withType(GroupDefinitionType.DIMENSION).withKey("REGION"),
-                        new GroupDefinition().withType(GroupDefinitionType.DIMENSION).withKey("OPERATING_SYSTEM")
+                        new GroupDefinition().withType("DIMENSION").withKey("INSTANCE_TYPE"),
+                        new GroupDefinition().withType("DIMENSION").withKey("REGION")
+
                 );
 
         GetCostAndUsageResult result = client.getCostAndUsage(request);
 
+
         for (ResultByTime resultByTime : result.getResultsByTime()) {
             for (Group group : resultByTime.getGroups()) {
-                String instanceType =  group.getKeys().get(0);
-                String region =  group.getKeys().get(1);
-                String os =  group.getKeys().get(2);
-                String unblendedCost = group.getMetrics().get("UnblendedCost").getAmount();
+                List<String> keys = group.getKeys();
+                String instanceType = !keys.isEmpty() ? keys.get(0) : "Unknown InstanceType";
+                String region = keys.size() > 1 ? keys.get(1) : "Unknown Region";
 
-                Ec2DTO ec2DTO = new Ec2DTO(instanceType, region, os, Integer.parseInt(unblendedCost));
-                ec2DTOS.add(ec2DTO);
+
+                if (!Objects.equals(instanceType, "NoInstanceType")) {
+                    GetCostAndUsageRequest additionalRequest = new GetCostAndUsageRequest()
+                            .withTimePeriod(new DateInterval().withStart(start).withEnd(end))
+                            .withGranularity(Granularity.MONTHLY)
+                            .withMetrics("UnblendedCost")
+                            .withFilter(new Expression()
+                                    .withAnd(Arrays.asList(
+                                            new Expression().withDimensions(new DimensionValues().withKey("INSTANCE_TYPE").withValues(instanceType)),
+                                            new Expression().withDimensions(new DimensionValues().withKey("REGION").withValues(region))
+                                    )))
+                            .withGroupBy(
+                                    new GroupDefinition().withType("DIMENSION").withKey("OPERATING_SYSTEM")
+                            );
+
+                    GetCostAndUsageResult additionalResult = client.getCostAndUsage(additionalRequest);
+
+                    for (ResultByTime additionalResultByTime : additionalResult.getResultsByTime()) {
+                        for (Group additionalGroup : additionalResultByTime.getGroups()) {
+                            String usageType = additionalGroup.getKeys().get(0);
+                            double additionalCost = Double.parseDouble(additionalGroup.getMetrics().get("UnblendedCost").getAmount());
+
+                            Ec2DTO ec2DTO = new Ec2DTO(instanceType, region, usageType, additionalCost);
+                            ec2DTOS.add(ec2DTO);
+                        }
+                    }
+                }
             }
         }
+        ec2DTOS.add(new Ec2DTO("m1.small", "us-east-1","Linux/UNIX", 5.3));
         return ec2DTOS;
 
     }

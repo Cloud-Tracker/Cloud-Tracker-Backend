@@ -32,14 +32,18 @@ public class EC2InstanceService {
         Map<Ec2DTO, List<RIDTO>> instancesOfferings = new HashMap<>();
         for (Ec2DTO ec2DTO : ec2DTOS){
             for(ReservedInstancesOffering offering : response.reservedInstancesOfferings()){
-                if(Objects.equals(offering.instanceTypeAsString(), ec2DTO.getInstanceType())
-                && Objects.equals(offering.productDescription(), ec2DTO.getOS())){
+                if(Objects.equals(offering.instanceTypeAsString(), ec2DTO.getInstanceType()) &&
+                    Objects.equals(String.valueOf(offering.productDescription()), ec2DTO.getOS())){
                     String az = offering.availabilityZone();
-                    String offeringRegion = az.substring(0, az.length() - 1);
+                    String offeringRegion = ec2DTO.getRegion();
+                    if(az != null)
+                        offeringRegion = az.substring(0, az.length() - 1);
                     if (offeringRegion.equals(ec2DTO.getRegion())) {
                         RIDTO ridto = new RIDTO();
+                        ridto.setInstanceType(offering.instanceTypeAsString());
                         ridto.setPrice(offering.fixedPrice());
                         ridto.setDuration(offering.duration());
+                        ridto.setOS(ec2DTO.getOS());
                         instancesOfferings.computeIfAbsent(ec2DTO, k -> new ArrayList<>()).add(ridto);
                     }
 

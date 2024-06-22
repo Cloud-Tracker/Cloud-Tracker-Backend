@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RIDTO {
-    String instanceID;
+    String instanceType;
     Long duration;
     Float price;
+    String OS;
 }
