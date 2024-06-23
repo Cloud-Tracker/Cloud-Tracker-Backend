@@ -7,10 +7,6 @@ import com.amazonaws.regions.Regions;
 import com.amazonaws.services.costexplorer.AWSCostExplorer;
 import com.amazonaws.services.costexplorer.AWSCostExplorerClientBuilder;
 import com.amazonaws.services.costexplorer.model.*;
-<<<<<<< HEAD
-=======
-import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
->>>>>>> 0f2f918eaee3f7e6c74f92773fd40b34ff6897cd
 import com.example.cloud_tracker.dto.CostQueryDTO;
 import com.example.cloud_tracker.dto.Ec2DTO;
 import com.example.cloud_tracker.dto.ServiceCostDTO;
