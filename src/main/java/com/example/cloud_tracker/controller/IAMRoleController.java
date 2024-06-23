@@ -70,10 +70,10 @@ public class IAMRoleController {
     }
   }
   @GetMapping("/forecast")
-  public ResponseEntity<Integer> getForecast(@RequestParam String arn){
+  public ResponseEntity<Double> getForecast(@RequestParam String arn){
     IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
     try {
-      Integer predictedCost = iamRoleService.getForecast(iamRole);
+      double predictedCost = iamRoleService.getForecast(iamRole);
       return ResponseEntity.status(HttpStatus.OK).body(predictedCost);
     } catch (AWSSecurityTokenServiceException ex) {
       ex.printStackTrace();

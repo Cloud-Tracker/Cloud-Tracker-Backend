@@ -15,6 +15,7 @@ import com.example.cloud_tracker.repository.IAMRoleRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -170,15 +171,15 @@ public class IAMRoleService {
         return ec2DTOS;
     }
 
-    public int getForecast(IAMRole iamRole) {
+    public double getForecast(IAMRole iamRole) {
         CostQueryDTO costQueryDTO = getData(iamRole);
         AWSCostExplorer costExplorer = AWSCostExplorerClientBuilder.standard()
                 .withCredentials(costQueryDTO.getAwsCredentialsProvider())
                 .withRegion(costQueryDTO.getRegion())
                 .build();
 
-        LocalDate endDate = LocalDate.now();
-        LocalDate startDate = endDate.minusMonths(6);
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.with(TemporalAdjusters.lastDayOfMonth());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         DateInterval dateInterval = new DateInterval()
@@ -192,7 +193,7 @@ public class IAMRoleService {
 
         GetCostForecastResult result = costExplorer.getCostForecast(request);
 
-        return Integer.parseInt(result.getTotal().getAmount());
+        return Double.parseDouble(result.getTotal().getAmount());
     }
 
 }
