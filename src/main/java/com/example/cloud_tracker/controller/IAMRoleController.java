@@ -2,6 +2,7 @@ package com.example.cloud_tracker.controller;
 
 import com.amazonaws.services.securitytoken.model.AWSSecurityTokenServiceException;
 import com.example.cloud_tracker.dto.Ec2DTO;
+import com.example.cloud_tracker.dto.Ec2ToRI;
 import com.example.cloud_tracker.dto.RIDTO;
 import com.example.cloud_tracker.dto.ServiceCostDTO;
 import com.example.cloud_tracker.model.IAMRole;
@@ -81,7 +82,7 @@ public class IAMRoleController {
     }
   }
   @GetMapping("/offerings")
-  public ResponseEntity<Map<Ec2DTO, List<RIDTO>>> getRIOfferings(@RequestParam String arn){
+  public ResponseEntity<List<Ec2ToRI>> getRIOfferings(@RequestParam String arn){
     IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
     try{
       return ResponseEntity.status(HttpStatus.OK).body(ec2InstanceService.getEc2FromRI(iamRole));
