@@ -16,13 +16,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "blogs")
 public class Blog {
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
 
   private String title;
   @Lob private String htmlContent;
-
-  // Getters and setters
 }

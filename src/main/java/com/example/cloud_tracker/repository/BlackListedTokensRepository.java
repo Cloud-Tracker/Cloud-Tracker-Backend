@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.cloud_tracker.model.BlackListedTokens;
 
 @Repository
-public interface BlackListedTokensRepository extends JpaRepository<BlackListedTokens,Integer> {
-    Boolean existsByToken(String token);
+public interface BlackListedTokensRepository extends JpaRepository<BlackListedTokens, Integer> {
+  Boolean existsByToken(String token);
 }

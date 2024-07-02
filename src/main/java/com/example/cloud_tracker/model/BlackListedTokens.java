@@ -13,11 +13,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-
 public class BlackListedTokens {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private int id;
-  @NotNull
-  private String token;
+
+  @NotNull private String token;
 }

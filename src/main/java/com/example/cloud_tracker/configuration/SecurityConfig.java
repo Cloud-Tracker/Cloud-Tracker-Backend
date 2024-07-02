@@ -33,32 +33,35 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
+  private final JwtFilter jwtFilter;
 
-    private final LogoutHandler logoutHandler;
+  private final LogoutHandler logoutHandler;
 
-    private final CorsFilter corsFilter;
+  private final CorsFilter corsFilter;
 
-    public SecurityConfig(JwtFilter jwtFilter,LogoutHandler logoutHandler,CorsFilter corsFilter) {
-        this.jwtFilter = jwtFilter;
-        this.logoutHandler=logoutHandler;
-        this.corsFilter=corsFilter;
-    }
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityConfig(JwtFilter jwtFilter, LogoutHandler logoutHandler, CorsFilter corsFilter) {
+    this.jwtFilter = jwtFilter;
+    this.logoutHandler = logoutHandler;
+    this.corsFilter = corsFilter;
+  }
 
-//        CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http
-
-                .addFilterBefore(corsFilter, CorsFilter.class)
-//
-//        // i put the csrf config in the csrfconfig class and i will call it here
-//        .csrf((csrf) -> csrf.getClass().equals(CsrfConfig.class));
-
-                .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/", "/error", "/webjars/**", "/index.html", "/signup","/blogs/blog","/blogs","/blogs/blog/**"
-                        , "/signin",
+    http.addFilterBefore(corsFilter, CorsFilter.class)
+        .authorizeHttpRequests(
+            (authz) ->
+                authz
+                    .requestMatchers(
+                        "/",
+                        "/error",
+                        "/webjars/**",
+                        "/index.html",
+                        "/signup",
+                        "/blogs/blog",
+                        "/blogs",
+                        "/blogs/blog/**",
+                        "/signin",
                         "/v2/api-docs",
                         "/v3/api-docs",
                         "/v3/api-docs/**",
@@ -69,43 +72,50 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/webjars/**",
                         "/swagger-ui.html",
-                        "/validate-token").permitAll()
-                        .anyRequest().authenticated())
-                .oauth2Login(oath2 ->{
-                    oath2.successHandler((request, response, authentication) -> {
-                        response.sendRedirect("/welcome.html");
-                    });
-                })
-                .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(withDefaults())
-               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-               .logout((logout) ->logout
-                .logoutUrl("/logout")
-                .addLogoutHandler(logoutHandler)
-                .logoutSuccessHandler((request,response,authentication)->{
-                    SecurityContextHolder.clearContext();
-                    response.getWriter().write("Logout successful");
-                })
+                        "/validate-token")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .oauth2Login(
+            oath2 -> {
+              oath2.successHandler(
+                  (request, response, authentication) -> {
+                    response.sendRedirect("/welcome.html");
+                  });
+            })
+        .csrf(AbstractHttpConfigurer::disable)
+        .httpBasic(withDefaults())
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+        .logout(
+            (logout) ->
+                logout
+                    .logoutUrl("/logout")
+                    .addLogoutHandler(logoutHandler)
+                    .logoutSuccessHandler(
+                        (request, response, authentication) -> {
+                          SecurityContextHolder.clearContext();
+                          response.getWriter().write("Logout successful");
+                        }));
+    return http.build();
+  }
 
-               );
-        return http.build();
-    }
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService());
-        provider.setPasswordEncoder(bCryptPasswordEncoder());
-        return provider;
-    }
+  @Bean
+  public AuthenticationProvider authenticationProvider() {
+    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+    provider.setUserDetailsService(userDetailsService());
+    provider.setPasswordEncoder(bCryptPasswordEncoder());
+    return provider;
+  }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsServiceImpl();
-    }
+  @Bean
+  public UserDetailsService userDetailsService() {
+    return new UserDetailsServiceImpl();
+  }
 
-    @Bean
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public BCryptPasswordEncoder bCryptPasswordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

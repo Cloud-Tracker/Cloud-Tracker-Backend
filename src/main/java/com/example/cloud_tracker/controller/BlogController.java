@@ -4,10 +4,8 @@ import com.example.cloud_tracker.dto.BlogDTO;
 import com.example.cloud_tracker.model.Blog;
 import com.example.cloud_tracker.service.BlogService;
 import jakarta.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

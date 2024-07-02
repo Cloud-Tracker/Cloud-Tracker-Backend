@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BlogDTO {
-
   private String htmlContent;
   private String title;
-
 }

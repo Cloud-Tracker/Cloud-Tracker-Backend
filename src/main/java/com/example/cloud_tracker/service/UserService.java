@@ -2,11 +2,11 @@ package com.example.cloud_tracker.service;
 
 import com.example.cloud_tracker.dto.PasswordUpdateDTO;
 import com.example.cloud_tracker.dto.UserDTO;
+import com.example.cloud_tracker.dto.UserProfileDTO;
 import com.example.cloud_tracker.model.JwtResponse;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.repository.UserRepository;
 import org.springframework.lang.NonNull;
-import com.example.cloud_tracker.dto.UserProfileDTO;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService implements UserDetailsService {
+
   private final UserRepository userRepository;
   private final BCryptPasswordEncoder bCryptPasswordEncoder;
   private final JwtService jwtService;

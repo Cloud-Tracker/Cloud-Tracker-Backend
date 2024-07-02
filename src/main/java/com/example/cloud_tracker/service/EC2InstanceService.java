@@ -3,18 +3,19 @@ package com.example.cloud_tracker.service;
 import com.example.cloud_tracker.dto.Ec2DTO;
 import com.example.cloud_tracker.dto.RIDTO;
 import com.example.cloud_tracker.model.IAMRole;
+import java.util.*;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
 
-import java.util.*;
-
 @Service
 public class EC2InstanceService {
+
     private final AWSServicesService awsServicesService;
     IAMRoleService iamRoleService;
+
     public EC2InstanceService(AWSServicesService awsServicesService, IAMRoleService iamRoleService){
         this.awsServicesService = awsServicesService;
         this.iamRoleService = iamRoleService;

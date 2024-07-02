@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "AWS_services")
-public class AWSService{
+public class AWSService {
   @Id private int id;
   private String name;
   private double totalCost;
