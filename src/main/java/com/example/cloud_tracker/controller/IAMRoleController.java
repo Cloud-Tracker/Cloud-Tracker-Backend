@@ -22,6 +22,8 @@ public class IAMRoleController {
 
   private final IAMRoleService iamRoleService;
   private final EC2InstanceService ec2InstanceService;
+  private static final String MOCK_ARN = "arn:aws:iam::123456789012:role/MockRole";
+
   public IAMRoleController(IAMRoleService iamRoleService, EC2InstanceService ec2InstanceService) {
     this.iamRoleService = iamRoleService;
     this.ec2InstanceService = ec2InstanceService;
@@ -48,6 +50,12 @@ public class IAMRoleController {
 
   @GetMapping("/cost")
   public ResponseEntity<List<ServiceCostDTO>> getBlendedCost(@RequestParam String arn){
+    // Check for predefined ARN
+    if (MOCK_ARN.equals(arn)) {
+      List<ServiceCostDTO> mockData = iamRoleService.generateRandomMockBlendedCost();
+      return ResponseEntity.status(HttpStatus.OK).body(mockData);
+    }
+
     IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
     try {
       List<ServiceCostDTO> blendedCost = iamRoleService.getBlendedCost(iamRole);
