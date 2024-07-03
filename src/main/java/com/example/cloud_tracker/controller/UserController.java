@@ -59,7 +59,7 @@ public class UserController {
   }
 
   @PatchMapping("/me/profile")
-  public ResponseEntity<User> editProfile(@RequestBody UserProfileDTO userProfileDTO){
+  public ResponseEntity<User> editProfile(@RequestBody UserProfileDTO userProfileDTO) {
     User user = userService.editProfile(userProfileDTO);
     return ResponseEntity.ok(user);
   }
@@ -71,16 +71,15 @@ public class UserController {
   }
 
   @PatchMapping("/me/password")
-  public ResponseEntity<User> editPassword(@RequestBody PasswordUpdateDTO passwordUpdateDTO){
+  public ResponseEntity<User> editPassword(@RequestBody PasswordUpdateDTO passwordUpdateDTO) {
     User user = userService.editPassword(passwordUpdateDTO);
     return ResponseEntity.ok(user);
   }
+
   @PostMapping("/validate-token")
   public ResponseEntity<Boolean> validateToken(@RequestBody TokenValidationDTO tokenValidationDTO) {
     Boolean isValid = userService.validateUserToken(tokenValidationDTO.getToken());
-    if(isValid)
-      return ResponseEntity.ok(true);
-    else
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+    if (isValid) return ResponseEntity.ok(true);
+    else return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
   }
 }

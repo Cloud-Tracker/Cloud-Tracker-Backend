@@ -9,23 +9,26 @@ import com.example.cloud_tracker.model.IAMRole;
 import com.example.cloud_tracker.model.User;
 import com.example.cloud_tracker.service.EC2InstanceService;
 import com.example.cloud_tracker.service.IAMRoleService;
+import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/role")
 public class IAMRoleController {
 
+  private static final String MOCK_ARN = "arn:aws:iam::123456789012:role/MockRole";
   private final IAMRoleService iamRoleService;
   private final EC2InstanceService ec2InstanceService;
+  private final MockCostsService mockCostsService;
+
   public IAMRoleController(IAMRoleService iamRoleService, EC2InstanceService ec2InstanceService) {
     this.iamRoleService = iamRoleService;
     this.ec2InstanceService = ec2InstanceService;
+    this.mockCostsService = new MockCostsService();
   }
 
   @PostMapping()
@@ -49,6 +52,12 @@ public class IAMRoleController {
 
   @GetMapping("/cost")
   public ResponseEntity<List<ServiceCostDTO>> getBlendedCost(@RequestParam String arn){
+    // Check for predefined ARN
+    if (MOCK_ARN.equals(arn)) {
+      List<ServiceCostDTO> mockData = mockCostsService.generateRandomMockBlendedCost();
+      return ResponseEntity.status(HttpStatus.OK).body(mockData);
+    }
+
     IAMRole iamRole = iamRoleService.getIAMRoleByArn(arn);
     try {
       List<ServiceCostDTO> blendedCost = iamRoleService.getBlendedCost(iamRole);

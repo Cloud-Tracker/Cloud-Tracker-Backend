@@ -13,8 +13,10 @@ import lombok.NoArgsConstructor;
 public class IAMRole {
   private String accountID;
   private String roleName;
-  @Id
-  private String arn;
+  @Id private String arn;
+  @Column(name = "user_id")
+  private int userId;
+
   public IAMRole(String arn) {
     this.arn = arn;
   }
@@ -25,9 +27,6 @@ public class IAMRole {
     this.userId = userId;
   }
 
-  @Column(name = "user_id")
-  private int userId;
-
   @PrePersist
   private void setRoleCrendentials() {
     int startIndex = this.arn.indexOf("::") + 2;
@@ -37,7 +36,5 @@ public class IAMRole {
 
     startIndex = this.arn.lastIndexOf("/") + 1;
     this.roleName = this.arn.substring(startIndex);
-
   }
-
 }

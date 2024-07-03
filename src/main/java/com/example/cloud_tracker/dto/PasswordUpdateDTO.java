@@ -13,8 +13,10 @@ import lombok.NoArgsConstructor;
 public class PasswordUpdateDTO {
   @NotBlank(message = "Enter your current password")
   private String currentPassword;
+
   @NotBlank(message = "Enter your new password")
   private String newPassword;
+
   @NotBlank(message = "Confirm your new password")
   private String confirmNewPassword;
 }

@@ -1,6 +1,5 @@
 package com.example.cloud_tracker.model;
 
-
 import com.example.cloud_tracker.dto.UserDTO;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -20,57 +19,56 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "users")
 public class User implements UserDetails {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(unique = true)
-    @NotNull
-    private String email;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private int id;
 
-    @NotNull
-    private String password;
-    private String name;
-    @Lob
-    private String image;
+  @Column(unique = true)
+  @NotNull
+  private String email;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
-    @Nullable
-    private List<IAMRole> roles;
+  @NotNull private String password;
+  private String name;
+  @Lob private String image;
 
-    public User(UserDTO userDTO){
-        this.email = userDTO.getEmail();
-        this.name = userDTO.getName();
-        this.password = userDTO.getPassword();
-        this.image = userDTO.getImage();
-    }
+  @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL)
+  @Nullable
+  private List<IAMRole> roles;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
-    }
+  public User(UserDTO userDTO) {
+    this.email = userDTO.getEmail();
+    this.name = userDTO.getName();
+    this.password = userDTO.getPassword();
+    this.image = userDTO.getImage();
+  }
 
-    @Override
-    public String getUsername() {
-        return email;
-    }
+  @Override
+  public Collection<? extends GrantedAuthority> getAuthorities() {
+    return List.of();
+  }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
+  @Override
+  public String getUsername() {
+    return email;
+  }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonExpired() {
+    return true;
+  }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
+  @Override
+  public boolean isAccountNonLocked() {
+    return true;
+  }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+  @Override
+  public boolean isCredentialsNonExpired() {
+    return true;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
 }

@@ -8,9 +8,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AWSServicesService {
+
   @Autowired private AWSServiceRepository awsServiceRepository;
 
- public List<AWSService> getServices() {
+  public List<AWSService> getServices() {
     return awsServiceRepository.findAll();
   }
 

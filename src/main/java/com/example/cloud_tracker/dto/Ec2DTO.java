@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ec2DTO {
-    String instanceType;
-    String region;
-    String OS;
-    double cost;
+  String instanceType;
+  String region;
+  String OS;
+  double cost;
 }
