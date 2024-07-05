@@ -21,10 +21,11 @@ public class IAMRole {
     this.arn = arn;
   }
 
-  public IAMRole(String accountID, String roleName, int userId) {
+  public IAMRole(String accountID, String roleName, int userId, String arn) {
     this.accountID = accountID;
     this.roleName = roleName;
     this.userId = userId;
+    this.arn = arn;
   }
 
   @PrePersist
