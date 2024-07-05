@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # MySQL service configuration
   mysql-server:
     image: mysql:8.0
     container_name: mysql-server
@@ -15,7 +16,14 @@ services:
       - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    # Health check to ensure MySQL is ready before allowing dependent services to start
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s  # Maximum time to wait for a health check response
+      retries: 5  # Number of retries before considering the service unhealthy
+      interval: 2s  # Time between health check attempts
 
+  # Cloud Tracker service configuration
   cloud-tracker:
     build: .
     container_name: cloud-tracker
@@ -26,8 +34,10 @@ services:
       DB_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "8080:8080"
+    # Ensure MySQL service is healthy before starting Cloud Tracker
     depends_on:
-      - mysql-server
+      mysql-server:
+        condition: service_healthy
 
 volumes:
   mysql-data:
