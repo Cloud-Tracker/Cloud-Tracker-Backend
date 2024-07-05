@@ -5,54 +5,41 @@
 
 # Docker Guide
 
-To utilize the Docker for Cloud Tracker, follow these steps:
+To utilize Docker for Cloud Tracker, follow these steps:
 
-1. **Ensure Docker is Installed:** Verify that Docker is installed on your device. Installation procedures may vary
-   based on your operating system.
+1. **Ensure Docker is Installed:** Verify that Docker and Docker Compose are installed on your device. Installation procedures may vary based on your operating system.
 
-2. **Navigate to Project Directory:** Use the terminal to navigate to the project directory. Alternatively, you can
-   utilize the integrated terminal in your IDE.
+2. **Navigate to Project Directory:** Use the terminal to navigate to the project directory. Alternatively, you can utilize the integrated terminal in your IDE.
 
-3. **Build Docker Image:** Execute the following command to build the Docker image. You can replace `cloud-tracker` with
-   your preferred name:
+3. **Create .env File:** Create a `.env` file at the root of your project directory with the following content:
+    ```plaintext
+    # MySQL Configuration
+    MYSQL_DATABASE=your_database_name
+    MYSQL_USERNAME=your_username
+    MYSQL_PASSWORD=your_password
+    ```
+   Replace `your_database_name`, `your_username`, and `your_password` with your actual MySQL database name, username, and password.
+
+4. **Build Docker Images:** Execute the following command to build the Docker images:
     ```bash
-    docker build -t cloud-tracker .
+    docker-compose build
     ```
 
-4. **Confirm Image Build:** Check if the image was successfully built by running:
+5. **Start Services:** Once the images are built, start the services with:
+    ```bash
+    docker-compose up
+    ```
+
+6. **Stopping the Services:** To stop the running services, use:
+    ```bash
+    docker-compose down
+    ```
+
+7. **Deleting Images:** If you wish to delete the images, you can find the image IDs by running:
     ```bash
     docker images
     ```
-
-5. **Run Docker Image:** Depending on your preference regarding OAuth2 features, choose one of the following options:
-    - a) With OAuth2:
-        ```bash
-        docker run -p 8080:8080 -e GITHUB_CLIENT_ID=your_client_id -e GITHUB_CLIENT_SECRET=your_client_secret cloud-tracker
-        ```
-      Replace `your_client_id` and `your_client_secret` with your GitHub OAuth2 client ID and client secret.
-
-    - b) Without OAuth2:
-        ```bash
-        docker run -p 8080:8080 cloud-tracker
-        ```
-
-6. **Check Running Containers:** Open a new terminal tab and enter the command:
-    ```bash
-    docker container ls
-    ```
-
-7. **Stopping Containers:** To stop a running container, use:
-    ```bash
-    docker rm -f <container_id>
-    ```
-   Replace `<container_id>` with the container ID of the container you wish to stop.
-
-8. **Deleting Image:** If you wish to delete the image, use the following command:
+   Then, delete the images using:
     ```bash
     docker rmi <image_id>
     ```
-   You can find `<image_id>` by running:
-    ```bash
-    docker images
-    ```
-

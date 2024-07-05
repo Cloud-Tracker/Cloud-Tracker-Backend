@@ -76,13 +76,13 @@ public class SecurityConfig {
                     .permitAll()
                     .anyRequest()
                     .authenticated())
-        .oauth2Login(
-            oath2 -> {
-              oath2.successHandler(
-                  (request, response, authentication) -> {
-                    response.sendRedirect("/welcome.html");
-                  });
-            })
+//        .oauth2Login(
+//            oath2 -> {
+//              oath2.successHandler(
+//                  (request, response, authentication) -> {
+//                    response.sendRedirect("/welcome.html");
+//                  });
+//            })
         .csrf(AbstractHttpConfigurer::disable)
         .httpBasic(withDefaults())
         .sessionManagement(
