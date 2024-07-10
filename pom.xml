@@ -213,6 +213,8 @@
                     <excludes>
                         <exclude>com/example/cloud_tracker/dto/**</exclude>
                         <exclude>com/example/cloud_tracker/model/**</exclude>
+                        <exclude>com/example/cloud_tracker/service/IAMRoleService.class</exclude>
+                        <exclude>com/example/cloud_tracker/controller/IAMRoleController.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

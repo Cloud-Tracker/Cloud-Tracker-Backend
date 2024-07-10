@@ -44,7 +44,7 @@ public class CSVService {
     }
   }
 
-  private void extractMonthlyCost(CSVRecord record, SimpleDateFormat dateFormat)
+  void extractMonthlyCost(CSVRecord record, SimpleDateFormat dateFormat)
       throws ParseException {
     Date date = null;
     List<Double> costs = new ArrayList<>();
@@ -67,21 +67,21 @@ public class CSVService {
               formattedDate, awsServicesService.getAWSServiceByID(i + 1), costs.get(i));
   }
 
-  private void extractServiceNames(CSVRecord record, List<String> serviceNames) {
+  void extractServiceNames(CSVRecord record, List<String> serviceNames) {
     for (int i = 1; i < record.size() - 1; i++) {
       String serviceName = record.get(i);
       serviceNames.add(serviceName.substring(0, serviceName.length() - 3));
     }
   }
 
-  private void extractTotalCosts(CSVRecord record, List<Double> totalCosts) {
+  void extractTotalCosts(CSVRecord record, List<Double> totalCosts) {
     for (int i = 1; i < record.size() - 1; i++) {
       String totalCost = record.get(i);
       totalCosts.add(Double.parseDouble(totalCost));
     }
   }
 
-  private void saveAWSServices(List<String> serviceNames, List<Double> totalCosts) {
+  void saveAWSServices(List<String> serviceNames, List<Double> totalCosts) {
     for (int i = 0; i < serviceNames.size(); i++) {
       awsServicesService.addNewAWSService(i + 1, serviceNames.get(i), totalCosts.get(i));
     }
